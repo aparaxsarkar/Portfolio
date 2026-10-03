@@ -47,7 +47,7 @@ const ratio = (a, b) => {
   const { context, page } = await open()
   // Resting positions: where the page lands after a nav click or when the user pauses on a section.
   const sectionTops = await page.evaluate(() => [...document.querySelectorAll('main > section')].map((s) => Math.round(s.getBoundingClientRect().top + scrollY)))
-  const sel = ['.hero__name', '.hero__tagline', '.hero__intro', '.section__title', '.section__eyebrow', '.carousel__count', '.carousel__btn', '.spec dd', '.spec dt', '.contact__title', '.contact__blurb', '.contact__note', '.contact__label', '.nav__link', '.hero__cue', '.contact__footer']
+  const sel = ['.hero__name', '.hero__tagline', '.hero__intro', '.section__title', '.carousel__count', '.carousel__btn', '.contact__title', '.contact__blurb', '.contact__note', '.contact__label', '.nav__link', '.hero__cue', '.contact__footer']
   const worst = {}
   const transit = {}
   const maxScroll = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)
@@ -74,7 +74,7 @@ const ratio = (a, b) => {
         }
       return out
     }, sel)
-    await page.addStyleTag({ content: '.hero__inner *, .hero__cue, .section__head *, .carousel__controls *, .carousel__detail *, .contact__inner *, .contact__footer, .nav__inner * { color: transparent !important; border-color: transparent !important; transition: none !important; } .carousel__btn, .carousel__tick::before, .nav__link::after { visibility: hidden !important }' })
+    await page.addStyleTag({ content: '.hero__inner *, .hero__cue, .section__head *, .carousel__controls *, .contact__inner *, .contact__footer, .nav__inner * { color: transparent !important; border-color: transparent !important; transition: none !important; } .carousel__btn, .carousel__tick::before, .nav__link::after { visibility: hidden !important }' })
     const shotHidden = await page.screenshot()
     await page.evaluate(() => { for (const s of [...document.querySelectorAll('style')].filter((s) => s.textContent.includes('color: transparent !important'))) s.remove() })
     // decode via canvas in page

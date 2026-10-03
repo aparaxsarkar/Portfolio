@@ -102,7 +102,7 @@ cards) the carousel steps aside and the cards keep the standard dimensions.
 
 All copy lives in `src/data/*.ts` and is rendered through typed shapes (`src/data/types.ts`). Placeholder entries are
 clearly marked `[LIKE THIS]`. To update the site, edit those files — no component changes. Every card carries
-`tags`, `title`, a two-line `description` (clamped) and an **optional** `link` `{ label, href }`. Projects and research
+`tags`, `title`, a short `description` (up to five lines, then clamped) and an **optional** `link` `{ label, href }`. Projects and research
 link to GitHub (`github('repo-slug')`); other cards link to what they describe (`external('Certificate', …)`,
 `'Details'`, `'View'`), so the visible label and the accessible name always match the destination. An entry with no
 real destination simply omits `link` and the card renders without one.
@@ -113,10 +113,10 @@ real destination simply omits `link` and the card renders without one.
 src/
   config/        tunables: sun path, section→progress stops, star density, carousel feel
   data/          content (placeholders) + schemas
-  scroll/        scroll driver (scrollY → progress), nav state
+  scroll/        scroll driver (scrollY → progress), active section
   world/         state.ts (the model), keyframes.ts, store.ts, renderer.ts, render/{sky,land,stars,scene}.ts
   hooks/         useCarousel, motion (reduced-motion helper)
-  components/    Navigation, Hero, Section, Carousel, Card, ResearchDetail, Skills, Contact
+  components/    Navigation, Hero, Section, Carousel, Card, Skills, Contact
   styles/        tokens.css (design tokens), base.css
   utils/         color (OKLab), interpolation (monotone splines), seeded random
 qa/              Playwright scripts used for visual + functional QA (not part of the build)

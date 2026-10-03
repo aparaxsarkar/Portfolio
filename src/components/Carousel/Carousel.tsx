@@ -1,20 +1,17 @@
-import type { ReactNode } from 'react'
 import { useCarousel } from '../../hooks/useCarousel'
 import type { CardItem } from '../../data'
 import { Card } from '../Card/Card'
 import './Carousel.css'
 
-interface CarouselProps<T extends CardItem> {
+interface CarouselProps {
   /** Accessible name, e.g. "Projects". */
   label: string
   /** Singular noun used in announcements and button labels, e.g. "project". */
   noun: string
-  items: T[]
-  /** Optional extra detail for the centred item (used by Research). */
-  renderDetail?: (item: T) => ReactNode
+  items: CardItem[]
 }
 
-export function Carousel<T extends CardItem>({ label, noun, items, renderDetail }: CarouselProps<T>) {
+export function Carousel({ label, noun, items }: CarouselProps) {
   const { viewportRef, setCardRef, index, isStatic, goTo, next, prev, viewportProps } = useCarousel(items.length)
   const active = items[index]
   const pad = (n: number) => String(n).padStart(2, '0')
@@ -73,11 +70,6 @@ export function Carousel<T extends CardItem>({ label, noun, items, renderDetail 
         {isStatic ? '' : `${noun} ${index + 1} of ${items.length}: ${active.title}`}
       </p>
 
-      {renderDetail && (
-        <div className="carousel__detail" role="region" aria-label={`Details: ${active.title}`}>
-          {renderDetail(active)}
-        </div>
-      )}
     </div>
   )
 }

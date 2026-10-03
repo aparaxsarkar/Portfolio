@@ -127,11 +127,6 @@
   color: var(--ui-card-muted);
 }
 
-.carousel__detail {
-  width: min(100% - 2 * var(--gutter), 64rem);
-  margin: 1.25rem auto 0;
-}
-
 @media (max-width: 720px) {
   .carousel__count {
     min-width: 3.5rem;

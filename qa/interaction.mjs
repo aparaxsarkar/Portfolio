@@ -151,10 +151,28 @@ const activeIndex = (page, sel) =>
   await context.close()
 }
 
+const navShape = (page) =>
+  page.evaluate(() => {
+    const inner = document.querySelector('.nav__inner').getBoundingClientRect()
+    const name = document.querySelector('.nav__name')
+    const link = document.querySelector('.nav__link')
+    const cs = (el, k) => getComputedStyle(el)[k]
+    return JSON.stringify({
+      rect: [inner.left, inner.top, inner.width, inner.height].map((v) => Math.round(v * 10) / 10),
+      nameShown: cs(name, 'display') !== 'none' && cs(name, 'visibility') !== 'hidden',
+      nameFont: cs(name, 'fontSize') + cs(name, 'letterSpacing'),
+      linkFont: cs(link, 'fontSize') + cs(link, 'letterSpacing'),
+      bg: cs(document.querySelector('.nav__inner'), 'backgroundColor') !== 'rgba(0, 0, 0, 0)',
+      radius: cs(document.querySelector('.nav__inner'), 'borderTopLeftRadius'),
+      hasState: document.querySelector('.nav').hasAttribute('data-compact'),
+    })
+  })
+
 // ── Navigation ───────────────────────────────────────────────────────────
 {
   const { context, page } = await open()
-  check('nav starts expanded (not compact)', (await page.getAttribute('.nav', 'data-compact')) === 'false')
+  const navTop = await navShape(page)
+  check('nav has no landing state: no scroll-driven state attribute, pill shape from the first frame', !JSON.parse(navTop).hasState && JSON.parse(navTop).bg && JSON.parse(navTop).radius !== '0px', navTop)
   await page.click('.nav__link[href="#research"]')
   await page.waitForTimeout(200)
   const midY = await page.evaluate(() => scrollY)
@@ -162,13 +180,13 @@ const activeIndex = (page, sel) =>
   await page.waitForTimeout(2200)
   const y = await page.evaluate(() => scrollY)
   check('nav click lands on the section', Math.abs(y - (await top(page, 'research'))) < 3, `${Math.round(y)} vs ${Math.round(await top(page, 'research'))}`)
-  check('nav is compact after scrolling', (await page.getAttribute('.nav', 'data-compact')) === 'true')
+  check('nav is identical (size, position, type, branding) at the top and after scrolling', (await navShape(page)) === navTop)
   check('active link marked with aria-current', (await page.getAttribute('.nav__link[href="#research"]', 'aria-current')) === 'location')
   check('hash updated without reload', (await page.evaluate(() => location.hash)) === '#research')
   await page.click('.nav__name')
   await page.waitForTimeout(2500)
   check('name link returns to top', (await page.evaluate(() => scrollY)) < 3)
-  check('nav expands again at top', (await page.getAttribute('.nav', 'data-compact')) === 'false')
+  check('nav is still identical back at the top', (await navShape(page)) === navTop)
   await context.close()
 }
 

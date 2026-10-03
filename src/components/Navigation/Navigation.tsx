@@ -6,12 +6,10 @@ import './Navigation.css'
 const items = SECTIONS.filter((s) => s.label !== null)
 
 /**
- * One <nav>, two states. At rest it is a quiet line of labels set into the
- * sky; once the page scrolls it condenses into a small floating bar. The same
- * list becomes a compact dropdown (never a full-screen overlay) on narrow screens.
+ * One <nav>, one shape: a small floating bar, identical from the first frame onward (no landing state, nothing driven
+ * by scroll). On narrow screens the same list becomes a dropdown (never a full-screen overlay).
  */
 export function Navigation() {
-  const compact = useSyncExternalStore(pageStore.subscribe, pageStore.getCompact, () => false)
   const active = useSyncExternalStore(pageStore.subscribe, pageStore.getActive, () => 0)
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLElement>(null)
@@ -42,9 +40,9 @@ export function Navigation() {
   }
 
   return (
-    <header className="nav" data-compact={compact} data-open={open}>
+    <header className="nav" data-open={open}>
       <nav ref={rootRef} className="nav__inner" aria-label="Primary">
-        <a className="nav__name" href="#top" onClick={go('top')} tabIndex={compact ? 0 : -1}>
+        <a className="nav__name" href="#top" onClick={go('top')}>
           {site.name}
         </a>
         <button

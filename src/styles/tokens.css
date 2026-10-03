@@ -52,17 +52,18 @@
   --section-offset: 40svh; /* seats section content below the sky's visual centre */
   --hero-offset: 25svh;
   --contact-offset: 13svh;
-  --head-lift: 6.5rem; /* how far section titles float above their carousel */
+  --head-lift: 6.5rem; /* how far section titles float above the content block */
+  --head-gap: clamp(2.2rem, 5.5svh, 3.5rem); /* title → carousel */
+  --title-shift: 1.2rem; /* pad-top that holds the title where it sat when an ordinal stood above it */
 
   /* ── Cards & carousel (JS reads the rendered size, so these are the only source) ── */
-  --card-w: clamp(17.5rem, 23.5vw, 25rem);
-  --card-h: calc(var(--card-w) * 0.7);
-  --card-pad: clamp(1.05rem, 1.5vw, 1.4rem);
-  --carousel-gap: 1.75rem;
+  --card-w: clamp(19rem, 34vw, 36rem); /* ≈ 1.45× the previous 23.5vw / 25rem cap */
+  --card-h: calc(var(--card-w) * 0.72); /* room for tags, a two-line title and a five-line summary */
+  --card-pad: clamp(1.25rem, 1.9vw, 1.9rem);
+  --carousel-gap: 1.5rem;
 
   /* ── Navigation ── */
-  --nav-top: 1.5rem;
-  --nav-top-compact: 0.75rem;
+  --nav-top: 0.75rem;
 
   /* ── Motion ── */
   --dur-fast: 0.18s;
@@ -79,8 +80,9 @@
 
 @media (max-width: 720px) {
   :root {
-    --card-w: min(78vw, 21rem);
-    --card-h: calc(var(--card-w) * 0.68);
+    /* Phones are re-proportioned, not scaled: wider relative to the screen, taller relative to the width. */
+    --card-w: min(84vw, 22.5rem);
+    --card-h: calc(var(--card-w) * 0.98);
     --carousel-gap: 0.625rem;
     --section-offset: 34svh;
     --hero-offset: 21svh;

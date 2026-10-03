@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   /* Seated high, in the deeper sky: the sunrise below the block stays the event, and the text keeps clear of the glow. */
-  padding: max(var(--contact-offset), 8rem) var(--gutter) 0;
+  padding: calc(max(var(--contact-offset), 8rem) + var(--title-shift)) var(--gutter) 0;
   outline: none;
 }
 
@@ -15,16 +15,8 @@
   text-align: center;
 }
 
-.contact__eyebrow {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.3em;
-  color: var(--ui-ink-muted);
-}
-
 .contact__title {
-  margin: 0.2rem 0 0;
+  margin: 0;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: var(--contact-title);

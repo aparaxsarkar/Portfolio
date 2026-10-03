@@ -50,7 +50,7 @@
 }
 
 .card__title {
-  margin: 0.7rem 0 0;
+  margin: 1rem 0 0;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: var(--card-title);
@@ -66,23 +66,22 @@
 }
 
 .card__desc {
-  margin: 0.7rem 0 0;
+  margin: 0.9rem 0 0;
   font-size: var(--text-sm);
   line-height: 1.5;
   color: var(--ui-card-muted);
+  /* The summary is the card's main content: up to five lines, then an ellipsis. */
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
   overflow: hidden;
-  /* Reserve both lines so every card has identical anatomy. */
-  min-height: 3em;
 }
 
 .card__link {
   margin-top: auto;
   align-self: flex-start;
-  padding: 0.35rem 0 0.15rem;
+  padding: 0.9rem 0 0.15rem;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 0.14em;
@@ -98,4 +97,12 @@
 .card__link:hover {
   color: var(--ui-accent);
   border-color: var(--ui-accent);
+}
+
+/* Phones have a narrower text column, so the same summary needs one more line. */
+@media (max-width: 720px) {
+  .card__desc {
+    -webkit-line-clamp: 6;
+    line-clamp: 6;
+  }
 }

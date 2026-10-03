@@ -16,18 +16,13 @@ export interface CardItem {
   title: string
   /** Shown above the title, joined with " · ". */
   tags: string[]
-  /** Clamped to two lines in the card. Keep it short. */
+  /** A short summary, shown in up to five lines: what it was, what was built or done, and the outcome or purpose. */
   description: string
   /**
    * Optional outbound link. Code-oriented cards (projects, research) use GitHub; others link to what they describe
    * ("Certificate", "Details", "View"). Leave it out when there is no real destination — the card simply omits it.
    */
   link?: CardLink
-}
-
-/** Research is the technical-depth layer: same card, plus a spec sheet shown below the carousel. */
-export interface ResearchEntry extends CardItem {
-  details: { label: string; value: string }[]
 }
 
 export interface SkillGroup {

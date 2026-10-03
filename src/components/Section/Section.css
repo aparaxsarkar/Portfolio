@@ -2,29 +2,21 @@
   position: relative;
   min-height: 100vh;
   min-height: 100svh;
-  padding-top: max(calc(var(--section-offset) - var(--head-lift)), 9rem);
-  padding-bottom: clamp(3rem, 8svh, 6rem);
+  /* --title-shift keeps the title exactly where it sat when a small ordinal stood above it. */
+  padding-top: calc(max(calc(var(--section-offset) - var(--head-lift)), 9rem) + var(--title-shift));
+  padding-bottom: clamp(2.5rem, 5svh, 4rem);
   outline: none;
 }
 
 .section__head {
   text-align: center;
-  /* The title floats in the deeper upper sky; the gap keeps the carousel where it sits in the landscape. */
-  margin-bottom: calc(var(--head-lift) + clamp(0.5rem, 1.6svh, 1.25rem));
+  /* The title floats in the deeper upper sky; the gap to the cards is a token so the larger cards fit the viewport. */
+  margin-bottom: var(--head-gap);
   padding-inline: var(--gutter);
 }
 
-.section__eyebrow {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.3em;
-  color: var(--ui-ink);
-  text-shadow: var(--ink-halo);
-}
-
 .section__title {
-  margin: 0.15rem 0 0;
+  margin: 0;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: var(--section-title);
@@ -35,7 +27,4 @@
   text-shadow: var(--ink-halo);
 }
 
-.section--lift {
-  padding-top: max(calc(var(--section-offset) - var(--head-lift) - 7.5rem), 9rem);
-}
 

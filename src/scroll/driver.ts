@@ -12,14 +12,11 @@ import { worldStore } from '../world/store'
  * scrollY, so scrolling backwards retraces the exact same states.
  */
 
-const COMPACT_ENTER = 60
-const COMPACT_LEAVE = 20
-
-const page = { active: 0, compact: false }
+const page = { active: 0 }
 const pageListeners = new Set<() => void>()
 let anchors: number[] = SECTIONS.map(() => 0)
 
-/** Discrete page state (active section, compact nav). Safe for useSyncExternalStore. */
+/** Discrete page state (the active section). Safe for useSyncExternalStore. */
 export const pageStore = {
   subscribe(listener: () => void) {
     pageListeners.add(listener)
@@ -28,7 +25,6 @@ export const pageStore = {
     }
   },
   getActive: () => page.active,
-  getCompact: () => page.compact,
 }
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -76,10 +72,8 @@ export function startScrollDriver() {
     const probe = y + window.innerHeight * 0.5
     let active = 0
     for (let i = 0; i < anchors.length; i++) if (anchors[i] <= probe) active = i
-    const compact = page.compact ? y > COMPACT_LEAVE : y > COMPACT_ENTER
-    if (active !== page.active || compact !== page.compact) {
+    if (active !== page.active) {
       page.active = active
-      page.compact = compact
       pageListeners.forEach((l) => l())
     }
   }

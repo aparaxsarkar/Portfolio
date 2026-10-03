@@ -2,14 +2,11 @@ import { site } from '../../data'
 import './Contact.css'
 
 /** The end of the journey: deep night, one restrained call to action. */
-export function Contact({ number }: { number: number }) {
+export function Contact() {
   const { heading, blurb, links } = site.contact
   return (
     <section id="contact" className="contact" aria-labelledby="contact-title" tabIndex={-1}>
       <div className="contact__inner">
-        <p className="contact__eyebrow" aria-hidden="true">
-          {String(number).padStart(2, '0')}
-        </p>
         <h2 id="contact-title" className="contact__title">
           {heading}
         </h2>
