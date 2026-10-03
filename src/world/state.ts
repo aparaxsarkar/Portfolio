@@ -1,4 +1,4 @@
-import { HORIZON, SUN_ELEVATION_REF_Y, SUN_PATH } from '../config/world'
+import { HORIZON, SUN_ELEVATION_REF_Y, SUN_PATH, TIMELINE } from '../config/world'
 import {
   hexToRgb,
   labHue,
@@ -82,16 +82,23 @@ const rows = FRAMES.map((f) => [
 const sample = createChannelSampler(STOPS, rows)
 const scalarBase = COLOR_KEYS.length * 3
 
-/** The sun's position at a given progress. Rises, then holds: flat for progress ≥ `riseEnd`. */
+/** World progress → position on the night → dawn keyframe axis. */
+export const nightTime = (progress: number) => lerp(TIMELINE.start, TIMELINE.end, clamp(progress))
+
+/**
+ * The sun's position at world progress `s`. Rises continuously: a gentle ease-out (slope 1.25 at the start, 0.75 at the
+ * end — never zero), so it neither stalls nor jumps anywhere, including at the very end.
+ */
 export function sunPosition(progress: number) {
-  const { x0, x1, yHidden, yRisen, riseStart, riseEnd } = SUN_PATH
-  const t = smoothstep(riseStart, riseEnd, progress)
-  return { x: lerp(x0, x1, t), y: lerp(yHidden, yRisen, t) }
+  const s = clamp(progress)
+  const f = s + 0.25 * s * (1 - s)
+  const { x0, x1, yStart, yEnd } = SUN_PATH
+  return { x: lerp(x0, x1, f), y: lerp(yStart, yEnd, f) }
 }
 
 export function computeWorld(progressIn: number): WorldState {
   const progress = clamp(progressIn)
-  const v = sample(progress)
+  const v = sample(nightTime(progress))
   const labAt = (i: number): [number, number, number] => [v[i * 3], v[i * 3 + 1], v[i * 3 + 2]]
   const col = (key: (typeof COLOR_KEYS)[number]) => labToRgb(labAt(COLOR_KEYS.indexOf(key)))
   const scalar = (key: (typeof SCALAR_KEYS)[number]) => v[scalarBase + SCALAR_KEYS.indexOf(key)]

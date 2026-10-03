@@ -1,4 +1,4 @@
-import { DESIGN_HEIGHT, HORIZON } from '../../config/world'
+import { DESIGN_HEIGHT, HORIZON, SUN_PATH, SUN_SADDLE } from '../../config/world'
 import { clamp } from '../../utils/interpolation'
 import { createFbm1D, createRng } from '../../utils/random'
 import { buildGround, type GroundField } from './ground'
@@ -286,8 +286,8 @@ interface CactusDef {
 
 // Deliberately sparse: two foreground silhouettes framing the edges, a small loose group in the midground, two far ones.
 const CACTUS_DEFS: CactusDef[] = [
-  { anchor: 'left', x: 54, baseY: 896, h: 352, shape: 0, lean: -0.035, depth: 1 },
-  { anchor: 'right', x: 96, baseY: 888, h: 262, shape: 1, mirror: -1, lean: 0.03, depth: 1 },
+  { anchor: 'left', x: 40, baseY: 900, h: 268, shape: 0, lean: -0.035, depth: 1 },
+  { anchor: 'right', x: 92, baseY: 890, h: 236, shape: 1, mirror: -1, lean: 0.03, depth: 1 },
   { anchor: 'left', x: 438, baseY: 738, h: 100, shape: 2, lean: 0.02, depth: 0.7, minWidth: 560 },
   { anchor: 'left', x: 492, baseY: 750, h: 64, shape: 3, lean: -0.03, depth: 0.7, minWidth: 560 },
   { anchor: 'right', x: 468, baseY: 744, h: 84, shape: 0, mirror: -1, lean: 0.02, depth: 0.66, minWidth: 700 },
@@ -316,15 +316,17 @@ export function buildScene(widthD: number): Scene {
   const narrow = widthD < NARROW_WIDTH
   // Narrow (portrait) viewports show a slice of the same world: shrink big features so they stay in proportion.
   const K = clamp(widthD / 1100, 0.62, 1)
+  // The skyline is lowered into a flat notch at the sun's resting x, at every width, so the finished sun can sit on it.
+  const notch = (u: number) => 1 - SUN_SADDLE.depth * Math.exp(-((((u - SUN_PATH.x1) * widthD) / SUN_SADDLE.halfWidth) ** 2))
   return {
     widthD,
     farRanges: [
-      { ...buildRidge(widthD, { seed: 31, baseY: HZ + 6, amp: 175, freq: 0.0046, octaves: 5, sharp: 1.15, env: rangeEnvelope }), haze: 0.78 },
-      { ...buildRidge(widthD, { seed: 37, baseY: HZ + 8, amp: 105, freq: 0.0062, octaves: 5, sharp: 1.25, env: (u) => rangeEnvelope(1 - u * 0.9) }), haze: 0.56 },
+      { ...buildRidge(widthD, { seed: 31, baseY: HZ + 6, amp: 175, freq: 0.0046, octaves: 5, sharp: 1.15, env: (u) => rangeEnvelope(u) * notch(u) }), haze: 0.78 },
+      { ...buildRidge(widthD, { seed: 37, baseY: HZ + 8, amp: 105, freq: 0.0062, octaves: 5, sharp: 1.25, env: (u) => rangeEnvelope(1 - u * 0.9) * notch(u) }), haze: 0.56 },
     ],
     mesas: MESA_DEFS.filter((d) => wide(d.minWidth)).map((d) => buildMesa(narrow && d.narrow ? { ...d, ...d.narrow } : d, widthD, K)),
-    hills: buildRidge(widthD, { seed: 41, baseY: HZ + 8, amp: 36, freq: 0.0054, octaves: 3 }),
-    groundEdge: buildRidge(widthD, { seed: 23, baseY: HZ + 40, amp: 34, freq: 0.0032, octaves: 3 }),
+    hills: buildRidge(widthD, { seed: 41, baseY: HZ + 8, amp: 36, freq: 0.0054, octaves: 3, env: notch }),
+    groundEdge: buildRidge(widthD, { seed: 23, baseY: HZ + 40, amp: 34, freq: 0.0032, octaves: 3, env: notch }),
     ground: buildGround(widthD),
     cacti: CACTUS_DEFS.filter((d) => wide(d.minWidth)).map((d) => ({
       shape: CACTUS_SHAPES[d.shape],

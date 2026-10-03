@@ -2,6 +2,10 @@
 // usage: node qa/interaction.mjs [--url=http://localhost:5173/]
 import { chromium } from 'playwright-core'
 import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+
+// The world state the Projects section had before the timeline was re-based (captured from the old code at p = 0.24).
+const PROJECTS_STATE = JSON.parse(readFileSync(new URL('./fixtures/projects-state.json', import.meta.url), 'utf8'))
 
 const url = (process.argv.find((a) => a.startsWith('--url=')) ?? '--url=http://localhost:5173/').slice(6)
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
@@ -30,7 +34,7 @@ const activeIndex = (page, sel) =>
 // ── Model-level checks (pure functions of progress) ─────────────────────
 {
   const { context, page } = await open()
-  const m = await page.evaluate(async () => {
+  const m = await page.evaluate(async (PROJECTS_STATE) => {
     const { computeWorld, sunPosition } = await import('/src/world/state.ts')
     const { ShootingStars } = await import('/src/world/render/stars.ts')
     const samples = Array.from({ length: 201 }, (_, i) => sunPosition(i / 200))
@@ -38,24 +42,39 @@ const activeIndex = (page, sel) =>
     const worlds = Array.from({ length: 201 }, (_, i) => computeWorld(i / 200))
     const starsFade = worlds.every((w, i) => i === 0 || w.stars.opacity <= worlds[i - 1].stars.opacity + 1e-9)
     const shootFade = worlds.every((w, i) => i === 0 || w.shootingStars.activity <= worlds[i - 1].shootingStars.activity + 1e-9)
-    // The world holds once the sun is up: nothing changes between p=0.95 and p=1 (colours, sun, light, stars).
-    let maxDrift = 0
+    // ── Opening = the old Projects state, field for field (numbers to 1e-6; CSS colours to one 8-bit step). ──
+    let openDrift = 0
     const walk = (x, y) => {
-      if (typeof x === 'number') maxDrift = Math.max(maxDrift, Math.abs(x - y))
-      else if (x && typeof x === 'object') for (const k of Object.keys(x)) if (k !== 'progress') walk(x[k], y[k])
+      if (typeof x === 'number') openDrift = Math.max(openDrift, Math.abs(x - y))
+      else if (x && typeof x === 'object') for (const k of Object.keys(x)) if (k !== 'progress' && k !== 'ui') walk(x[k], y[k])
     }
-    // Numbers: compare with a tolerance (equal spline stops differ by float noise, not by design).
-    walk(computeWorld(0.95), computeWorld(1))
-    const uiDrift = Math.max(...Object.keys(computeWorld(1).ui).map((k) => {
-      const na = computeWorld(0.95).ui[k].match(/[\d.]+/g).map(Number)
-      const nb = computeWorld(1).ui[k].match(/[\d.]+/g).map(Number)
-      return Math.max(...na.map((v, i) => Math.abs(v - nb[i])))
-    }))
-    const frozen = maxDrift < 1e-6 && uiDrift < 1.01 // CSS colours are rounded to whole 0–255 steps
-    const frozenDetail = { maxDrift, uiDrift }
-    const a = JSON.stringify(computeWorld(0.37).ui)
-    const b = JSON.stringify(computeWorld(0.9).ui) + JSON.stringify(computeWorld(0.37).ui)
-    const same = a === b.slice(-a.length)
+    const opening = computeWorld(0)
+    walk(opening, PROJECTS_STATE)
+    const nums = (str) => str.match(/[\d.]+/g).map(Number)
+    const uiDrift = Math.max(...Object.keys(PROJECTS_STATE.ui).map((k) => Math.max(...nums(opening.ui[k]).map((v, i) => Math.abs(v - nums(PROJECTS_STATE.ui[k])[i])))))
+    // ── No stagnation: everything is still changing right up to s = 1 (compare s = 0.98 → 1.0, and 0.90 → 0.92). ──
+    const change = (a, b) => {
+      const A = computeWorld(a)
+      const B = computeWorld(b)
+      let d = 0
+      const w = (x, y) => {
+        if (typeof x === 'number') d = Math.max(d, Math.abs(x - y))
+        else if (x && typeof x === 'object') for (const k of Object.keys(x)) if (k !== 'progress' && k !== 'ui') w(x[k], y[k])
+      }
+      w(A, B)
+      return d
+    }
+    const moving = {
+      sunEnd: sunPosition(1).y - sunPosition(0.98).y,
+      sunStart: sunPosition(0.02).y - sunPosition(0).y,
+      sun90: sunPosition(0.92).y - sunPosition(0.9).y,
+      worldEnd: change(0.98, 1),
+      world90: change(0.9, 0.92),
+    }
+    // Determinism: evaluating the same progress again, after visiting other values, gives the identical world.
+    const a = JSON.stringify(computeWorld(0.37))
+    computeWorld(0.9)
+    const same = a === JSON.stringify(computeWorld(0.37))
     const stars = [0, 0.2, 0.4, 0.55, 0.67, 0.77, 0.85, 0.93, 1].map((p) => [p, +computeWorld(p).stars.opacity.toFixed(3)])
     // Shooting-star cadence at several activity levels (simulated 30,000 s at 30 fps).
     const cadence = {}
@@ -101,8 +120,9 @@ const activeIndex = (page, sel) =>
       rises,
       starsFade,
       shootFade,
-      frozen,
-      frozenDetail,
+      openDrift,
+      uiDrift,
+      moving,
       activity0: computeWorld(0).shootingStars.activity,
       activity1: computeWorld(1).shootingStars.activity,
       same,
@@ -111,13 +131,15 @@ const activeIndex = (page, sel) =>
       silent: !inactive.active,
       worstCard,
     }
-  })
+  }, PROJECTS_STATE)
   const HORIZON = 0.64
   check('opens in the dark: sun is below the horizon at p=0', m.start.y > HORIZON + 0.06, `y=${m.start.y.toFixed(2)}`)
   check('sun is still hidden at mid-journey (night/pre-dawn)', m.mid.y > HORIZON + 0.03, `y=${m.mid.y.toFixed(2)}`)
   check('sun ends clearly above the horizon (visible disc)', m.end.y < HORIZON - 0.03, `y=${m.end.y.toFixed(2)}`)
   check('sun only ever rises (never sinks), x drifts smoothly', m.rises)
-  check('world holds at dawn: nothing changes between p≈0.95 and p=1', m.frozen, JSON.stringify(m.frozenDetail))
+  check('opening state equals the former Projects-section state (every field of the fixture)', m.openDrift < 1e-6 && m.uiDrift < 1.01, `max field drift ${m.openDrift.toExponential(1)}, CSS colour drift ${m.uiDrift}`)
+  check('sun is already moving at s=0, at s=0.9 and still moving at s=1 (no early stop)', m.moving.sunStart < -0.002 && m.moving.sun90 < -0.002 && m.moving.sunEnd < -0.002, JSON.stringify({ start: +m.moving.sunStart.toFixed(4), at90: +m.moving.sun90.toFixed(4), end: +m.moving.sunEnd.toFixed(4) }))
+  check('no end stagnation: sky/terrain/light still change between s=0.98 and 1.0', m.moving.worldEnd > 0.02 && m.moving.world90 > 0.02, JSON.stringify({ end: +m.moving.worldEnd.toFixed(3), at90: +m.moving.world90.toFixed(3) }))
   check('stars fade monotonically from full to none', m.starsFade && m.stars[0][1] === 1 && m.stars[m.stars.length - 1][1] === 0, JSON.stringify(m.stars))
   check('shooting stars start rare-but-present and vanish by dawn', m.shootFade && m.activity0 > 0.3 && m.activity1 === 0, `${m.activity0} → ${m.activity1}`)
   check('world is a pure function of progress', m.same)
@@ -291,7 +313,16 @@ const activeIndex = (page, sel) =>
   await hashAt(6000)
   await hashAt(900)
   const backward = await hashAt(3300)
-  check('scroll forward → backward gives pixel-identical frame', forward === backward)
+  check('scroll forward → backward gives pixel-identical frame (mid-journey)', forward === backward)
+  // Full range: 0 → 100% → 0, and 100% reached from below vs. from above.
+  const max = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)
+  const top0 = await hashAt(0)
+  const bottomUp = await hashAt(max)
+  const back0 = await hashAt(0)
+  await hashAt(max * 0.5)
+  const bottomDown = await hashAt(max)
+  check('0% → 100% → 0%: the opening frame returns pixel-identical', top0 === back0)
+  check('100% is the same frame whether reached from the top or from mid-page', bottomUp === bottomDown)
   await context.close()
 }
 

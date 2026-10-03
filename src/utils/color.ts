@@ -73,3 +73,9 @@ export function contrast(a: Rgb, b: Rgb) {
   const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x)
   return (hi + 0.05) / (lo + 0.05)
 }
+
+/** Pull a colour toward its own luminance grey. Distance in the real world loses saturation before it loses form. */
+export function desaturate([r, g, b]: Rgb, amount: number): Rgb {
+  const grey = 0.299 * r + 0.587 * g + 0.114 * b
+  return [r + (grey - r) * amount, g + (grey - g) * amount, b + (grey - b) * amount]
+}

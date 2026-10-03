@@ -11,11 +11,11 @@
  *   0.00 pitch black   0.20 deep night   0.40 night        (black · deep blue · dark emerald · brown)
  *   0.55 pre-dawn      0.67 blue/purple hour                (indigo → violet)
  *   0.77 pink + warm horizon   0.85 sunrise yellow          (dusty pink → yellow)
- *   0.93 dawn · 1.00 dawn (identical: the world holds)      (restrained blue, pale yellow horizon)
+ *   0.93 dawn (the final frame — the timeline ends here, still moving)  (restrained blue, pale yellow horizon)
  *
- * The last two stops are equal on purpose: once the sun is clearly up, nothing keeps changing.
+ * `TIMELINE` (config/world.ts) maps world progress 0 → 1 onto 0.24 → 0.93 of this axis.
  */
-export const STOPS = [0, 0.2, 0.4, 0.55, 0.67, 0.77, 0.85, 0.93, 1] as const
+export const STOPS = [0, 0.2, 0.4, 0.55, 0.67, 0.77, 0.85, 0.93] as const
 
 export interface Keyframe {
   skyTop: string
@@ -201,7 +201,7 @@ export const FRAMES: Keyframe[] = [
   // 0.85 — sunrise: yellow breaks through, blue arrives overhead
   {
     skyTop: '#2f4f92',
-    skyMid: '#a65f86',
+    skyMid: '#9f5b83',
     skyHorizon: '#ffcf80',
     sun: '#ffe9a8',
     glow: '#ffc27a',
@@ -223,32 +223,7 @@ export const FRAMES: Keyframe[] = [
     cardL: 0.31,
     cardC: 0.05,
   },
-  // 0.93 — dawn: restrained blue, pale yellow horizon (the world holds from here)
-  {
-    skyTop: '#2f5896',
-    skyMid: '#395b93',
-    skyHorizon: '#fcd49a',
-    sun: '#fff3c8',
-    glow: '#ffd596',
-    far: '#7480a6',
-    mesa: '#4d2822',
-    hills: '#a07650',
-    sage: '#746b54',
-    groundBack: '#b98757',
-    groundFront: '#6e4a32',
-    cactus: '#2b4237',
-    rim: '#ffe6b0',
-    shadow: '#35231f',
-    cloud: '#fff0d8',
-    sunIntensity: 1,
-    glowStrength: 0.9,
-    haze: 0.5,
-    stars: 0,
-    shooting: 0,
-    cardL: 0.33,
-    cardC: 0.045,
-  },
-  // 1.00 — dawn (identical to 0.93)
+  // 0.93 — dawn: restrained blue, pale yellow horizon 
   {
     skyTop: '#2f5896',
     skyMid: '#395b93',

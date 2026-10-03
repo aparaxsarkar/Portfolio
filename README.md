@@ -2,8 +2,8 @@
 
 A single, persistent illustrated desert. **The world doesn't move — time does.** Vertical scroll is the passage of
 time: the portfolio opens in pitch-black night under a field of stars, the sky warms through blue and violet to a
-dusty pink horizon, the sun rises, the stars fade out, and the journey ends — and holds — at dawn. It never continues
-into daytime. Shadows lengthen out of nothing as the sun clears the rocks. Content (experiences, projects, research,
+dusty pink horizon, the sun rises, the stars fade out, and the journey ends exactly as the sun clears the horizon. It never continues
+into daytime, and nothing is held or stationary at the end: the world is still moving at the last pixel of the page. Shadows lengthen out of nothing as the sun clears the rocks. Content (experiences, projects, research,
 …) is ordinary accessible HTML laid over the scene.
 
 Live at **https://aparajitasarkar.github.io/** (see [Deployment](#deployment)).
@@ -45,11 +45,15 @@ levels, and the UI colour tokens. Colours are authored as keyframes (`src/world/
 monotone spline **in OKLab**, so mixes stay clean (no muddy mid-tones, no overshoot). Nothing drifts out of sync
 because nothing has its own clock.
 
-- **The sun rises, then the world holds.** It waits below the horizon until `riseStart`, climbs on a smooth ease to
-  `yRisen` by `riseEnd`, and stays there (`SUN_PATH` in `config/world.ts`). The last two palette stops are
-  identical, so from `p ≈ 0.93` nothing changes: the finished state is dawn, not morning. The resting sun sits in a
-  deliberate saddle between the rock masses (the masses are pushed apart on portrait screens to keep it open), clear
-  of the text.
+- **One timeline across the whole page.** World progress `s` (0 → 1) indexes the night → dawn keyframes through
+  `TIMELINE` (`config/world.ts`): `s = 0` is the state the Projects section used to have (deep night, full stars,
+  sun below the horizon — `qa/fixtures/projects-state.json` pins it field for field) and `s = 1` is the finished
+  dawn. The approved palette is simply stretched over the page; there is no end stop, so nothing stalls.
+- **The sun rises continuously** (`SUN_PATH`): already moving at `s = 0` (though hidden), still moving at `s = 1`,
+  on an ease whose slope never reaches zero. Its resting position is calibrated against the *actual skyline*: the
+  terrain is shaped into a flat notch at the sun's x for every viewport width (`SUN_SADDLE`), so the finished disc
+  sits on the horizon — fully visible, no sky gap. `qa/sunrise.mjs` measures this from rendered pixels at all five
+  target sizes. The rock masses are pushed apart on portrait screens to keep the saddle open.
 - **Palette journey** (`world/keyframes.ts`): pitch black / emerald → deep blue → indigo → violet → dusty pink →
   yellow → a restrained blue dawn.
 - **Lighting is continuous, never branched.** Nothing in the renderer asks "is the sun left or right of this
@@ -139,6 +143,8 @@ node qa/capture.mjs 1440x900,390x844    # screenshots of every section → qa/sh
 node qa/interaction.mjs                 # nav, carousel (keys/drag/touch/wheel/focus), sun path, determinism, shooting-star cadence
 node qa/lighting.mjs                    # lighting continuity: (A) sweeps progress, (B) sweeps the sun across every formation; fails on any abrupt tonal change
 node qa/journey.mjs <dir> [WxH] [p,…]   # world-only filmstrip of the night → dawn journey at explicit progress values
+node qa/percent.mjs <dir> [WxH] [0,25,…] # the real page (UI included) at given % of the scroll range
+node qa/sunrise.mjs                     # terminal sun: fully visible and resting on the skyline, measured from pixels, 5 viewports
 node qa/mesa-strip.mjs <dir> [mesa]     # renders a filmstrip around a formation + checks forward→back is pixel-identical
 node qa/audit.mjs                       # axe-core, text contrast over the painted sky, scroll frame times, reduced motion
 ```

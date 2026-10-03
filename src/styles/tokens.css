@@ -84,7 +84,7 @@
     --carousel-gap: 0.625rem;
     --section-offset: 34svh;
     --hero-offset: 21svh;
-    --contact-offset: 13svh;
+    --contact-offset: 10svh;
     --head-lift: 4.5rem;
     --hero-name: clamp(3.4rem, 17vw, 5rem);
   }

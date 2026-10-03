@@ -1,5 +1,5 @@
 import { DESIGN_HEIGHT } from '../../config/world'
-import { mixFast, rgba, type Rgb } from '../../utils/color'
+import { desaturate, mixFast, rgba, type Rgb } from '../../utils/color'
 import { clamp } from '../../utils/interpolation'
 import type { WorldState } from '../state'
 import { shadeGround } from './ground'
@@ -90,7 +90,7 @@ export function drawLand(
   // Far rock dissolves into the blue of distance (haze tempered with the sky), not into the warm horizon glow.
   const distance = mixFast(haze, sky.mid, 0.5)
   for (const r of scene.farRanges) {
-    const base = mixFast(T.far, distance, r.haze * (0.45 + 0.55 * atm))
+    const base = desaturate(mixFast(T.far, distance, r.haze * (0.45 + 0.55 * atm)), 0.25 + 0.3 * r.haze)
     const g = ctx.createLinearGradient(0, r.top, 0, HZ + 24)
     g.addColorStop(0, rgba(mixFast(base, T.rim, 0.05 * direct)))
     g.addColorStop(1, rgba(mixFast(base, haze, 0.6)))
@@ -102,7 +102,7 @@ export function drawLand(
   for (const m of scene.mesas) {
     // Distance: contrast, saturation and relief all fall away toward the horizon.
     const contrast = 1 - m.depth * 0.6
-    const base = mixFast(T.mesa, haze, m.depth * (0.4 + 0.6 * atm) * 0.9)
+    const base = desaturate(mixFast(T.mesa, haze, m.depth * (0.4 + 0.6 * atm) * 0.9), m.depth * 0.55)
     const shade = mixFast(base, L.shadowColor, 0.52 * contrast)
     const lit = mixFast(base, T.rim, (0.08 + 0.28 * direct) * contrast)
 
@@ -185,7 +185,7 @@ export function drawLand(
 
   // ── Midground hills ──────────────────────────────────────────────────
   {
-    const base = mixFast(T.hills, haze, 0.16 + 0.3 * atm)
+    const base = desaturate(mixFast(T.hills, haze, 0.16 + 0.3 * atm), 0.3)
     const g = ctx.createLinearGradient(0, scene.hills.top, 0, HZ + 120)
     g.addColorStop(0, rgba(mixFast(base, T.rim, 0.1 * direct)))
     g.addColorStop(1, rgba(mixFast(base, T.groundBack, 0.6)))
@@ -239,7 +239,7 @@ export function drawLand(
   for (const c of [...scene.cacti].sort((a, b) => a.baseY - b.baseY)) {
     const s = c.height / 100
     const far = (1 - c.depth) * 0.6 * atm
-    const col = mixFast(T.cactus, haze, far)
+    const col = desaturate(mixFast(T.cactus, haze, far), (1 - c.depth) * 0.5)
     const top = mixFast(col, T.rim, 0.14 * direct * c.depth)
     const foot = mixFast(col, L.shadowColor, 0.35)
     // Local x flips with `mirror`; keep the light direction in the same frame.

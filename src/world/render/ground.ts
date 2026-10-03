@@ -1,5 +1,5 @@
 import { DESIGN_HEIGHT, HORIZON } from '../../config/world'
-import { mixFast } from '../../utils/color'
+import { desaturate, mixFast } from '../../utils/color'
 import { clamp, smoothstep } from '../../utils/interpolation'
 import { createNoise2D } from '../../utils/random'
 import type { WorldState } from '../state'
@@ -60,11 +60,14 @@ export function buildGround(widthD: number): GroundField {
     const z = 1 / (0.16 + 0.84 * t) // ground distance (capped so far rows are not sampled finer than the grid)
     const detail = smoothstep(0, 0.45, t) // distance simplifies the surface instead of aliasing it
     for (let i = 0; i < GW; i++) {
-      const wx = ((colX[i] - widthD / 2) / (widthD * 0.5)) * z * 0.85
-      const wz = z * 1.25
+      const gx = ((colX[i] - widthD / 2) / (widthD * 0.5)) * z * 0.85
+      const gz = z * 1.25
+      // Rotate the dune field ~24° so crests run diagonally across the view: terrain, not horizontal bands.
+      const wx = gx * 0.91 + gz * 0.41
+      const wz = -gx * 0.41 * 0.7 + gz * 0.91
       const warp = (noise(wx * 0.33 + 11, wz * 0.33) - 0.5) * 2.2
-      const a = noise(wx * 0.55 + warp, wz * 0.26)
-      const ridged = 1 - Math.abs(2 * noise(wx * 0.8 + 40 + warp * 0.6, wz * 0.34 + 7) - 1)
+      const a = noise(wx * 0.55 + warp, wz * 0.3)
+      const ridged = 1 - Math.abs(2 * noise(wx * 0.8 + 40 + warp * 0.6, wz * 0.38 + 7) - 1)
       const b = noise(wx * 1.7, wz * 0.8 + 20)
       const c = noise(wx * 3.6, wz * 1.7 + 9)
       H[j * GW + i] = a * 0.5 + ridged * ridged * 0.38 + (b * 0.18 + c * 0.05) * detail
@@ -131,7 +134,7 @@ export function shadeGround(field: GroundField, state: WorldState, widthD: numbe
   const data = field.image.data
   for (let j = 0; j < GH; j++) {
     const t = field.depth[j]
-    const rowBase = mixFast(T.groundBack, T.groundFront, t ** 0.8)
+    const rowBase = desaturate(mixFast(T.groundBack, T.groundFront, t ** 0.8), (1 - t) ** 1.6 * 0.4)
     const hazeAmt = (1 - t) ** 1.7 * 0.6 * atm
     for (let i = 0; i < GW; i++) {
       const k = j * GW + i
