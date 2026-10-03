@@ -1,0 +1,98 @@
+.contact {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  /* Seated high, in the deeper sky: the sunrise below the block stays the event, and the text keeps clear of the glow. */
+  padding: max(var(--contact-offset), 8rem) var(--gutter) 0;
+  outline: none;
+}
+
+.contact__inner {
+  width: min(100%, 60rem);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.contact__eyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.3em;
+  color: var(--ui-ink-muted);
+}
+
+.contact__title {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--contact-title);
+  line-height: 1;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ui-ink);
+  text-shadow: 0 0 36px var(--ui-ink-shadow);
+}
+
+.contact__blurb {
+  max-width: 32rem;
+  margin: 1.5rem auto 0;
+  line-height: 1.7;
+  color: var(--ui-ink);
+  text-shadow: var(--ink-halo);
+}
+
+.contact__links {
+  margin: clamp(2rem, 5svh, 3.25rem) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0 1.5rem;
+  text-align: left;
+}
+
+.contact__link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1rem 0 1.1rem;
+  border-top: 1px solid var(--ui-rule);
+  color: var(--ui-ink);
+  text-decoration: none;
+  transition:
+    border-color var(--dur-fast) ease,
+    color var(--dur-fast) ease;
+}
+
+.contact__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-shadow: var(--ink-halo);
+}
+
+.contact__note {
+  font-size: var(--text-sm);
+  color: var(--ui-ink);
+  text-shadow: var(--ink-halo);
+  overflow-wrap: anywhere;
+}
+
+.contact__link:hover {
+  color: var(--ui-accent);
+  border-color: var(--ui-accent);
+}
+
+.contact__footer {
+  margin-top: auto;
+  padding: 3rem 0 1.75rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ui-ink-muted);
+}

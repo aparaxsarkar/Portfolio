@@ -1,0 +1,38 @@
+.spec {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem 2rem;
+  padding: 1.1rem 1.4rem 1.2rem;
+  border-radius: var(--radius-card);
+  background: var(--ui-card-bg);
+  border: 1px solid var(--ui-card-line);
+  box-shadow: 0 24px 40px -28px rgb(0 0 0 / 0.7);
+}
+
+.spec dt {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ui-card-tag);
+}
+
+.spec dd {
+  margin: 0.4rem 0 0;
+  font-size: var(--text-base);
+  line-height: 1.55;
+  color: var(--ui-card-fg);
+}
+
+@media (max-width: 720px) {
+  .spec {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+    padding: 1rem 1.15rem;
+  }
+  .spec dd {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+}

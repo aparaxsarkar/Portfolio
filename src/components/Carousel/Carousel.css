@@ -1,0 +1,139 @@
+.carousel {
+  width: 100%;
+}
+
+.carousel__slot {
+  display: contents;
+}
+
+.carousel__viewport {
+  position: relative;
+  height: calc(var(--card-h) + 3.5rem);
+  column-gap: var(--carousel-gap); /* read by the carousel engine as the card gap */
+  overflow-x: clip;
+  touch-action: pan-y;
+  cursor: grab;
+  border-radius: var(--radius-card);
+}
+
+.carousel[data-static='true'] .carousel__viewport {
+  cursor: default;
+  touch-action: auto;
+}
+
+.carousel__viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.carousel__viewport:focus-visible {
+  outline-offset: -6px;
+}
+
+.carousel__controls {
+  width: fit-content;
+  max-width: calc(100% - 2 * var(--gutter));
+  margin: 0.25rem auto 0;
+  padding: 0.2rem 1rem 0.2rem 0.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--ui-nav-bg);
+  border: 1px solid var(--ui-card-line);
+  box-shadow: 0 14px 30px -16px rgb(0 0 0 / 0.6);
+}
+
+.carousel__btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ui-card-fg);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease,
+    opacity var(--dur-fast) ease;
+}
+
+.carousel__btn:hover:not(:disabled) {
+  background: rgb(255 255 255 / 0.07);
+  border-color: var(--ui-card-line);
+}
+
+.carousel__btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.carousel__ticks {
+  display: flex;
+  align-items: center;
+}
+
+.carousel__tick {
+  position: relative;
+  width: 1.5rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.carousel__tick::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.75rem;
+  height: 2px;
+  margin: -1px 0 0 -0.375rem;
+  border-radius: 2px;
+  background: var(--ui-card-fg);
+  opacity: 0.45;
+  transition:
+    width var(--dur-med) var(--ease-out),
+    margin var(--dur-med) var(--ease-out),
+    opacity var(--dur-fast) ease;
+}
+
+.carousel__tick:hover::before {
+  opacity: 0.7;
+}
+
+.carousel__tick[aria-current='true']::before {
+  width: 1.4rem;
+  margin-left: -0.7rem;
+  opacity: 1;
+  background: var(--ui-accent);
+}
+
+.carousel__count {
+  margin: 0;
+  min-width: 4.5rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-card-muted);
+}
+
+.carousel__detail {
+  width: min(100% - 2 * var(--gutter), 64rem);
+  margin: 1.25rem auto 0;
+}
+
+@media (max-width: 720px) {
+  .carousel__count {
+    min-width: 3.5rem;
+  }
+}

@@ -1,0 +1,91 @@
+/**
+ * Design tokens. The `--ui-*` colours below are *day-time fallbacks* only — at
+ * runtime the world store overwrites them every frame from the sky, so panels,
+ * text and rules always belong to the current light. They keep the page legible
+ * if scripts are slow or fail.
+ */
+:root {
+  color-scheme: dark;
+
+  /* ── Environment-derived colour (fallbacks; see world/state.ts) ── */
+  --ui-sky-top: rgb(36 85 138);
+  --ui-sky-horizon: rgb(230 203 162);
+  --ui-card-bg: rgb(74 58 42 / 0.97);
+  --ui-card-bg-top: rgb(86 69 52 / 0.97);
+  --ui-card-line: rgb(150 128 104 / 0.55);
+  --ui-card-fg: rgb(246 239 228);
+  --ui-card-muted: rgb(214 201 183);
+  --ui-card-tag: rgb(226 190 138);
+  --ui-card-dim: rgb(18 12 8);
+  --ui-nav-bg: rgb(66 51 37 / 0.9);
+  --ui-ink: rgb(246 239 228);
+  --ui-ink-muted: rgb(226 217 203);
+  --ui-ink-shadow: rgb(14 22 40 / 0.6);
+  --ui-accent: rgb(247 206 140);
+  --ui-rule: rgb(246 239 228 / 0.28);
+
+  /* Tight, glyph-hugging halo for text that sits directly on the painting. */
+  --ink-halo:
+    0 1px 1px var(--ui-ink-shadow), 0 0 10px var(--ui-ink-shadow), 0 0 26px var(--ui-ink-shadow);
+  --ink-halo-lg:
+    0 2px 3px var(--ui-ink-shadow), 0 0 18px var(--ui-ink-shadow), 0 0 52px var(--ui-ink-shadow);
+
+  /* ── Typography ── */
+  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Times New Roman', serif;
+  --font-sans: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+
+  --hero-name: clamp(3.1rem, 8vw, 9rem);
+  --hero-tagline: clamp(1.15rem, 0.7rem + 1.15vw, 1.75rem);
+  --section-title: clamp(1.7rem, 1.2rem + 1.4vw, 2.7rem);
+  --contact-title: clamp(2.3rem, 1rem + 5vw, 5.25rem);
+  --card-title: clamp(1.55rem, 1.25rem + 0.5vw, 1.95rem);
+
+  /* ── Space & shape ── */
+  --gutter: clamp(1.25rem, 5.5vw, 5rem);
+  --content-max: 82rem;
+  --radius-card: 14px;
+  --section-offset: 40svh; /* seats section content below the sky's visual centre */
+  --hero-offset: 25svh;
+  --contact-offset: 13svh;
+  --head-lift: 6.5rem; /* how far section titles float above their carousel */
+
+  /* ── Cards & carousel (JS reads the rendered size, so these are the only source) ── */
+  --card-w: clamp(17.5rem, 23.5vw, 25rem);
+  --card-h: calc(var(--card-w) * 0.7);
+  --card-pad: clamp(1.05rem, 1.5vw, 1.4rem);
+  --carousel-gap: 1.75rem;
+
+  /* ── Navigation ── */
+  --nav-top: 1.5rem;
+  --nav-top-compact: 0.75rem;
+
+  /* ── Motion ── */
+  --dur-fast: 0.18s;
+  --dur-med: 0.4s;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ── Layers ── */
+  --z-world: 0;
+  --z-content: 10;
+  --z-nav: 50;
+  --z-skip: 100;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --card-w: min(78vw, 21rem);
+    --card-h: calc(var(--card-w) * 0.68);
+    --carousel-gap: 0.625rem;
+    --section-offset: 34svh;
+    --hero-offset: 21svh;
+    --contact-offset: 13svh;
+    --head-lift: 4.5rem;
+    --hero-name: clamp(3.4rem, 17vw, 5rem);
+  }
+}

@@ -1,0 +1,290 @@
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: var(--z-nav);
+  display: flex;
+  justify-content: center;
+  padding-top: var(--nav-top);
+  pointer-events: none;
+  transition: padding-top var(--dur-med) var(--ease-out);
+  --nav-font: var(--text-sm);
+  --nav-gap: clamp(1.1rem, 2.1vw, 2.4rem);
+}
+
+.nav[data-compact='true'] {
+  padding-top: var(--nav-top-compact);
+  --nav-font: var(--text-xs);
+  --nav-gap: clamp(0.65rem, 1.2vw, 1.3rem);
+}
+
+.nav__inner {
+  position: relative;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  padding: 0.55rem 0.25rem 0.85rem;
+  border: 1px solid transparent;
+  border-bottom-color: var(--ui-rule);
+  border-radius: 0;
+  background: transparent;
+  transition:
+    padding var(--dur-med) var(--ease-out),
+    border-radius var(--dur-med) var(--ease-out),
+    background-color var(--dur-med) ease,
+    border-color var(--dur-med) ease,
+    box-shadow var(--dur-med) ease;
+}
+
+.nav[data-compact='true'] .nav__inner {
+  padding: 0.35rem 1.1rem;
+  border-radius: 999px;
+  background: var(--ui-nav-bg);
+  border-color: var(--ui-card-line);
+  box-shadow: 0 14px 30px -14px rgb(0 0 0 / 0.6);
+}
+
+/* Name: only present once the hero's own title has scrolled away. */
+.nav__name {
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 0;
+  margin-right: 0;
+  opacity: 0;
+  visibility: hidden;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.14em;
+  color: var(--ui-ink);
+  text-decoration: none;
+  transition:
+    max-width var(--dur-med) var(--ease-out),
+    margin var(--dur-med) var(--ease-out),
+    opacity var(--dur-med) ease,
+    visibility 0s var(--dur-med);
+}
+
+.nav[data-compact='true'] .nav__name {
+  max-width: 14rem;
+  margin-right: 1.3rem;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.nav__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--nav-gap);
+  transition: gap var(--dur-med) var(--ease-out);
+}
+
+.nav__link {
+  position: relative;
+  display: block;
+  padding: 0.5rem 0.1rem;
+  font-family: var(--font-mono);
+  font-size: var(--nav-font);
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--ui-ink);
+  opacity: 0.9;
+  text-shadow: var(--ink-halo);
+  transition:
+    opacity var(--dur-fast) ease,
+    font-size var(--dur-med) var(--ease-out),
+    color var(--dur-fast) ease;
+}
+
+.nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0.1rem;
+  right: 0.1rem;
+  bottom: 0.1rem;
+  height: 1px;
+  background: var(--ui-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-med) var(--ease-out);
+}
+
+.nav__link:hover {
+  opacity: 1;
+}
+
+.nav__link[aria-current='location'] {
+  opacity: 1;
+}
+
+.nav__link[aria-current='location']::after {
+  transform: scaleX(1);
+}
+
+.nav__menu {
+  display: none;
+}
+
+/* Compact name needs room; below this the bar shows labels only. */
+@media (max-width: 1279px) {
+  .nav[data-compact='true'] .nav__name {
+    max-width: 0;
+    margin-right: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* ── Narrow screens: a small bar with a dropdown, never a full-screen overlay ── */
+@media (max-width: 1079px) {
+  .nav {
+    padding-inline: 1rem;
+    --nav-font: var(--text-sm);
+  }
+
+  .nav__inner {
+    width: min(100%, 34rem);
+    justify-content: space-between;
+    padding: 0.2rem 0.2rem 0.2rem 1rem;
+    border-bottom-color: transparent;
+    border-radius: 999px;
+    min-height: 3rem;
+    margin-left: auto;
+    transition:
+      width var(--dur-med) var(--ease-out),
+      background-color var(--dur-med) ease,
+      border-color var(--dur-med) ease,
+      box-shadow var(--dur-med) ease;
+  }
+
+  .nav[data-compact='true'] .nav__inner {
+    padding: 0.2rem 0.2rem 0.2rem 1rem;
+    width: min(100%, 34rem);
+  }
+
+  /* On phones the name is the bar's identity once it condenses. */
+  .nav[data-compact='true'] .nav__name {
+    max-width: 14rem;
+    margin-right: 0.5rem;
+    opacity: 1;
+    visibility: visible;
+    font-size: 0.95rem;
+  }
+
+  .nav:not([data-compact='true']) .nav__inner {
+    width: auto;
+    background: var(--ui-nav-bg);
+    border-color: var(--ui-card-line);
+  }
+
+  .nav__menu {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.6rem;
+    padding: 0 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ui-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .nav__menu-icon {
+    position: relative;
+    width: 0.9rem;
+    height: 0.5rem;
+  }
+
+  .nav__menu-icon::before,
+  .nav__menu-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: currentColor;
+    transition:
+      top var(--dur-med) var(--ease-out),
+      bottom var(--dur-med) var(--ease-out),
+      transform var(--dur-med) var(--ease-out);
+  }
+
+  .nav__menu-icon::before {
+    top: 0;
+  }
+
+  .nav__menu-icon::after {
+    bottom: 0;
+  }
+
+  /* Two bars fold into a close mark. */
+  .nav[data-open='true'] .nav__menu-icon::before {
+    top: 50%;
+    transform: rotate(45deg);
+  }
+
+  .nav[data-open='true'] .nav__menu-icon::after {
+    bottom: 50%;
+    transform: rotate(-45deg);
+  }
+
+  .nav__list {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: min(100%, 16rem);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0.4rem;
+    border-radius: var(--radius-card);
+    background: var(--ui-card-bg);
+    border: 1px solid var(--ui-card-line);
+    box-shadow: 0 24px 40px -20px rgb(0 0 0 / 0.7);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition:
+      opacity var(--dur-fast) ease,
+      transform var(--dur-med) var(--ease-out),
+      visibility 0s var(--dur-fast);
+  }
+
+  .nav[data-open='true'] .nav__list {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+
+  .nav__link {
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+    padding: 0 0.9rem;
+    border-radius: 0.6rem;
+    font-size: var(--text-xs);
+    color: var(--ui-card-fg);
+    text-shadow: none;
+    opacity: 0.9;
+  }
+
+  .nav__link::after {
+    left: 0.9rem;
+    right: auto;
+    width: 1.1rem;
+    bottom: 0.65rem;
+  }
+
+  .nav__link:hover {
+    background: rgb(255 255 255 / 0.05);
+  }
+}
