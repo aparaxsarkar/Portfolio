@@ -78,6 +78,19 @@
   overflow: hidden;
 }
 
+.card__meta {
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--ui-card-muted);
+}
+
+.card__meta li + li {
+  margin-top: 0.3rem;
+}
+
 .card__link {
   margin-top: auto;
   align-self: flex-start;

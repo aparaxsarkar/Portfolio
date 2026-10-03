@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import { Carousel } from './components/Carousel/Carousel'
+import { EducationCard } from './components/Card/EducationCard'
+import { Carousel, CardCarousel } from './components/Carousel/Carousel'
 import { Contact } from './components/Contact/Contact'
 import { Hero } from './components/Hero/Hero'
 import { Navigation } from './components/Navigation/Navigation'
@@ -25,27 +26,33 @@ export default function App() {
         <Hero />
 
         <Section id="experiences" title={titleOf('experiences')}>
-          <Carousel label="Experiences" noun="experience" items={experiences} />
+          <CardCarousel label="Experiences" noun="experience" items={experiences} />
         </Section>
 
         <Section id="projects" title={titleOf('projects')}>
-          <Carousel label="Projects" noun="project" items={projects} />
+          <CardCarousel label="Projects" noun="project" items={projects} />
         </Section>
 
         <Section id="research" title={titleOf('research')}>
-          <Carousel label="Research" noun="research entry" items={research} />
+          <CardCarousel label="Research" noun="research entry" items={research} />
         </Section>
 
         <Section id="education" title={titleOf('education')}>
-          <Carousel label="Education" noun="education entry" items={education} />
+          <Carousel
+            label="Education"
+            noun="education entry"
+            items={education}
+            announce={(e) => `${e.degree}, ${e.university}`}
+            renderCard={(entry, slide) => <EducationCard entry={entry} {...slide} />}
+          />
         </Section>
 
         <Section id="achievements" title={titleOf('achievements')}>
-          <Carousel label="Achievements" noun="achievement" items={achievements} />
+          <CardCarousel label="Achievements" noun="achievement" items={achievements} />
         </Section>
 
         <Section id="extracurricular" title={titleOf('extracurricular')}>
-          <Carousel label="Extracurricular activities" noun="activity" items={extracurricular} />
+          <CardCarousel label="Extracurricular activities" noun="activity" items={extracurricular} />
         </Section>
 
         <Section id="skills" title={titleOf('skills')}>

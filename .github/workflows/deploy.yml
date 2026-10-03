@@ -1,8 +1,10 @@
 name: Deploy to GitHub Pages
 
+# Paused: deploys are manual-only for now (Actions tab → "Deploy to GitHub Pages" → Run workflow).
+# To deploy on every push again, add back:
+#   push:
+#     branches: [main]
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

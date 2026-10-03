@@ -298,9 +298,33 @@ const navShape = (page) =>
   const links = await page.$$eval('.card__link', (as) => as.map((a) => ({ section: a.closest('section').id, text: a.textContent.trim(), aria: a.getAttribute('aria-label'), host: new URL(a.href).hostname })))
   const expect = { experiences: ['Details ↗', 'example.com'], projects: ['GitHub ↗', 'github.com'], research: ['GitHub ↗', 'github.com'], education: ['Details ↗', 'example.com'], achievements: ['Certificate ↗', 'example.com'], extracurricular: ['View ↗', 'example.com'] }
   const wrong = links.filter((l) => !expect[l.section] || l.text !== expect[l.section][0] || l.host !== expect[l.section][1] || !l.aria.toLowerCase().startsWith(l.text.replace(' ↗', '').toLowerCase()))
-  check('card link label, accessible name and host agree in every section', links.length === 4 + 7 + 4 + 2 + 4 + 3 && wrong.length === 0, wrong.length ? JSON.stringify(wrong[0]) : `${links.length} links; GitHub only on projects/research`)
+  check('card link label, accessible name and host agree in every section', links.length === 4 + 7 + 4 + 1 + 4 + 3 && wrong.length === 0, wrong.length ? JSON.stringify(wrong[0]) : `${links.length} links; GitHub only on projects/research`)
   const bare = await page.$$eval('#extracurricular .card', (cs) => cs.map((c) => c.querySelectorAll('a').length))
   check('an entry with no destination simply omits the link (no dead or fake link)', bare.filter((n) => n === 0).length === 1 && bare.length === 4, JSON.stringify(bare))
+  await context.close()
+}
+
+// ── Education: a credential, not a project card ──────────────────────────
+{
+  const { context, page } = await open()
+  const cards = await page.$$eval('#education .card', (cs) =>
+    cs.map((c) => ({
+      top: c.querySelector('.card__tags')?.textContent,
+      title: c.querySelector('.card__title')?.textContent,
+      meta: [...c.querySelectorAll('.card__meta li')].map((li) => li.textContent),
+      hasDesc: !!c.querySelector('.card__desc'),
+      links: c.querySelectorAll('a').length,
+      order: [...c.children].map((el) => el.className.split(' ')[0]),
+      metaFont: c.querySelector('.card__meta') ? getComputedStyle(c.querySelector('.card__meta')).fontSize : null,
+      titleFont: getComputedStyle(c.querySelector('.card__title')).fontSize,
+      badge: !!c.querySelector('progress, meter, [role="progressbar"], .badge'),
+    })),
+  )
+  check('education cards have no summary paragraph', cards.every((c) => !c.hasDesc))
+  check('hierarchy: degree · years → university → metadata → link', cards[0].order.join(',') === 'card__tags,card__title,card__meta,card__link' && /·/.test(cards[0].top), JSON.stringify(cards[0].order))
+  check('undergrad shows "GPA: 3.7 / 4.0" and "Honors: Data Science"', cards[0].meta.join('|') === 'GPA: 3.7 / 4.0|Honors: Data Science', JSON.stringify(cards[0].meta))
+  check('absent optional fields are omitted (no distinction line, no link on the second entry)', cards[1].meta.length === 1 && cards[1].links === 0, JSON.stringify({ meta: cards[1].meta, links: cards[1].links }))
+  check('GPA is quiet: body-size text, no badge/meter/progress bar', cards.every((c) => !c.badge) && parseFloat(cards[0].metaFont) < parseFloat(cards[0].titleFont) / 1.5, `${cards[0].metaFont} vs title ${cards[0].titleFont}`)
   await context.close()
 }
 

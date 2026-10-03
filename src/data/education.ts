@@ -1,20 +1,25 @@
 import { external } from './links'
-import type { CardItem } from './types'
+import type { EducationEntry } from './types'
 
-/** PLACEHOLDER CONTENT — two entries; the layout keeps normal card dimensions. */
-export const education: CardItem[] = [
+/**
+ * PLACEHOLDER CONTENT — bracketed values are placeholders.
+ * Only degree, years and university are required; gpa, distinction and link appear on the card only when present.
+ */
+export const education: EducationEntry[] = [
   {
     id: 'edu-1',
-    title: '[DEGREE], [UNIVERSITY]',
-    tags: ['[Field of study]', '[Years]'],
-    description: '[PLACEHOLDER: your focus area, any thesis or capstone, and the coursework most relevant to the work you do now. Keep it to a few lines. Be specific about your part. Say what you personally built or owned. Name the outcome plainly, with a number if you have one.]',
+    degree: '[B.S. / B.A., MAJOR]',
+    years: '[YEARS]',
+    university: '[UNIVERSITY]',
+    gpa: '3.7 / 4.0',
+    distinction: 'Honors: Data Science',
     link: external('Details', 'https://example.com/PLACEHOLDER-education-1'),
   },
   {
     id: 'edu-2',
-    title: '[DEGREE], [UNIVERSITY]',
-    tags: ['[Field of study]', '[Years]'],
-    description: '[PLACEHOLDER: the programme, what you concentrated on, and one or two notable projects, courses or distinctions from it. Written in a few lines, not a transcript. Name the outcome plainly. Name the outcome plainly, with a number if you have one.]',
-    link: external('Details', 'https://example.com/PLACEHOLDER-education-2'),
+    degree: '[M.S. / PROGRAM]',
+    years: '[YEARS]',
+    university: '[UNIVERSITY]',
+    gpa: '[X.XX / 4.00]',
   },
 ]

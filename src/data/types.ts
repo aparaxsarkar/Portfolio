@@ -25,6 +25,24 @@ export interface CardItem {
   link?: CardLink
 }
 
+/**
+ * An academic credential. Deliberately not a CardItem: no summary, no tags — just the facts.
+ * Every field except `degree`, `years` and `university` is optional and is simply not rendered when absent.
+ */
+export interface EducationEntry {
+  id: string
+  /** Degree or programme, e.g. "B.S., Computer Science". */
+  degree: string
+  /** e.g. "2019 – 2023". */
+  years: string
+  university: string
+  /** The score only, e.g. "3.7 / 4.0"; the card adds the "GPA:" label. */
+  gpa?: string
+  /** A complete line, e.g. "Honors: Data Science", "Concentration: Machine Learning" or "Thesis: …". */
+  distinction?: string
+  link?: CardLink
+}
+
 export interface SkillGroup {
   category: string
   items: string[]

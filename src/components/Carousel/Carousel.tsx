@@ -1,17 +1,42 @@
+import type { ReactNode, Ref } from 'react'
 import { useCarousel } from '../../hooks/useCarousel'
 import type { CardItem } from '../../data'
 import { Card } from '../Card/Card'
 import './Carousel.css'
 
-interface CarouselProps {
+/** What a carousel hands each card so it can take part in the slide behaviours. */
+export interface SlideProps {
+  ref: Ref<HTMLDivElement>
+  /** 1-based position, for the slide label. */
+  position: number
+  total: number
+}
+
+interface CarouselProps<T extends { id: string }> {
   /** Accessible name, e.g. "Projects". */
   label: string
   /** Singular noun used in announcements and button labels, e.g. "project". */
   noun: string
-  items: CardItem[]
+  items: T[]
+  /** Text announced to screen readers when an item becomes current. */
+  announce: (item: T) => string
+  renderCard: (item: T, slide: SlideProps) => ReactNode
 }
 
-export function Carousel({ label, noun, items }: CarouselProps) {
+/** The standard project/experience-style carousel. */
+export function CardCarousel({ label, noun, items }: { label: string; noun: string; items: CardItem[] }) {
+  return (
+    <Carousel
+      label={label}
+      noun={noun}
+      items={items}
+      announce={(item) => item.title}
+      renderCard={(item, slide) => <Card item={item} {...slide} />}
+    />
+  )
+}
+
+export function Carousel<T extends { id: string }>({ label, noun, items, announce, renderCard }: CarouselProps<T>) {
   const { viewportRef, setCardRef, index, isStatic, goTo, next, prev, viewportProps } = useCarousel(items.length)
   const active = items[index]
   const pad = (n: number) => String(n).padStart(2, '0')
@@ -30,13 +55,11 @@ export function Carousel({ label, noun, items }: CarouselProps) {
         {items.map((item, i) => (
           <CardSlot
             key={item.id}
-            item={item}
-            position={i + 1}
-            total={items.length}
-            setRef={setCardRef(i)}
             onSelect={() => (isStatic ? undefined : goTo(i))}
             isCurrent={isStatic || i === index}
-          />
+          >
+            {renderCard(item, { ref: setCardRef(i), position: i + 1, total: items.length })}
+          </CardSlot>
         ))}
       </div>
 
@@ -67,7 +90,7 @@ export function Carousel({ label, noun, items }: CarouselProps) {
       )}
 
       <p className="sr-only" role="status" aria-live="polite">
-        {isStatic ? '' : `${noun} ${index + 1} of ${items.length}: ${active.title}`}
+        {isStatic ? '' : `${noun} ${index + 1} of ${items.length}: ${announce(active)}`}
       </p>
 
     </div>
@@ -75,16 +98,13 @@ export function Carousel({ label, noun, items }: CarouselProps) {
 }
 
 interface CardSlotProps {
-  item: CardItem
-  position: number
-  total: number
-  setRef: (el: HTMLElement | null) => void
   onSelect: () => void
   isCurrent: boolean
+  children: ReactNode
 }
 
 /** Wraps a card with the "click a side card to bring it forward" and "focus brings it forward" behaviours. */
-function CardSlot({ item, position, total, setRef, onSelect, isCurrent }: CardSlotProps) {
+function CardSlot({ onSelect, isCurrent, children }: CardSlotProps) {
   return (
     <div
       className="carousel__slot"
@@ -99,7 +119,7 @@ function CardSlot({ item, position, total, setRef, onSelect, isCurrent }: CardSl
         if (!isCurrent) onSelect()
       }}
     >
-      <Card ref={setRef} item={item} position={position} total={total} />
+      {children}
     </div>
   )
 }

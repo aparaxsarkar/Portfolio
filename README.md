@@ -107,6 +107,10 @@ link to GitHub (`github('repo-slug')`); other cards link to what they describe (
 `'Details'`, `'View'`), so the visible label and the accessible name always match the destination. An entry with no
 real destination simply omits `link` and the card renders without one.
 
+Education is the exception: it is a credential, not a project, so it uses its own `EducationEntry` shape (`degree`,
+`years`, `university`, optional `gpa`, `distinction`, `link`) and a concise card with no summary. Optional fields that are
+absent are simply not rendered.
+
 ## Project layout
 
 ```
@@ -153,7 +157,7 @@ Edit the Chrome path at the top of each script if you are not on macOS.
 
 ## Deployment
 
-`.github/workflows/deploy.yml` builds and publishes `dist/` to GitHub Pages on every push to `main`.
+`.github/workflows/deploy.yml` builds and publishes `dist/` to GitHub Pages. It is currently **manual-only** (`workflow_dispatch`): run it from the Actions tab. Re-add the `push` trigger in that file to deploy on every push to `main`.
 
 1. Create the repository **`aparajitasarkar.github.io`** (the user-site repo name is what makes it live at the root).
 2. Push this project to its `main` branch.
