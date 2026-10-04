@@ -55,7 +55,7 @@ export default function App() {
           <CardCarousel label="Extracurricular activities" noun="activity" items={extracurricular} />
         </Section>
 
-        <Section id="skills" title={titleOf('skills')}>
+        <Section id="skills" title={titleOf('skills')} fullHeight>
           <Skills />
         </Section>
 

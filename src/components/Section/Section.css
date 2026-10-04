@@ -1,11 +1,16 @@
 .section {
   position: relative;
-  min-height: 100vh;
-  min-height: 100svh;
   /* --title-shift keeps the title exactly where it sat when a small ordinal stood above it. */
   padding-top: calc(max(calc(var(--section-offset) - var(--head-lift)), 9rem) + var(--title-shift));
-  padding-bottom: clamp(2.5rem, 5svh, 4rem);
+  /* Height follows the content: the space after a section is the same token everywhere, whatever the content's height. */
+  padding-bottom: var(--section-gap);
   outline: none;
+}
+
+/* Sections that fill the screen on their own (Skills, which sits just above the specially-composed Contact). */
+.section--screen {
+  min-height: 100vh;
+  min-height: 100svh;
 }
 
 .section__head {

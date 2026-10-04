@@ -12,6 +12,19 @@ import { clamp, lerp, smoothstep } from '../utils/interpolation'
 import { prefersReducedMotion } from './motion'
 
 /**
+ * Compact cards (`.card--compact`, used by Education) size to their content; so that a set of them reads as a set, they
+ * all take the height of the tallest. Natural heights are re-read each time, so removing a field shrinks them again.
+ */
+function equaliseCompactCards(cards: (HTMLElement | null)[]): number | null {
+  const compact = cards.filter((el): el is HTMLElement => !!el && el.classList.contains('card--compact'))
+  if (!compact.length) return null
+  for (const el of compact) el.style.height = ''
+  const tallest = Math.max(...compact.map((el) => el.offsetHeight))
+  for (const el of compact) el.style.height = `${tallest}px`
+  return tallest
+}
+
+/**
  * Carousel engine. The focus position `pos` is a float in card units; a
  * critically-damped spring chases an integer `target`. Every card is placed
  * as a pure function of its signed distance `d = i - pos` from the centre
@@ -155,6 +168,10 @@ export function useCarousel(count: number) {
       const cs = getComputedStyle(vp)
       s.cardW = first.offsetWidth
       s.gap = parseFloat(cs.columnGap) || 24
+      // Fixed-size cards sit in a box sized from --card-h (CSS). Compact cards size to their content, so the box must too —
+      // otherwise the space they don't use becomes dead space before the next section.
+      const tallest = equaliseCompactCards(cardRefs.current)
+      vp.style.height = tallest ? `calc(${tallest}px + var(--carousel-pad))` : ''
       const fits = count <= 2 && count * s.cardW + (count - 1) * s.gap * 1.5 <= vp.clientWidth - 32
       s.isStatic = fits
       setIsStatic(fits)
@@ -163,6 +180,8 @@ export function useCarousel(count: number) {
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(vp)
+    // Text metrics change when web fonts arrive, which can change a compact card's natural height.
+    void document.fonts?.ready.then(measure)
     return () => ro.disconnect()
   }, [count, render])
 

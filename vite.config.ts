@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Deployed at the root of https://aparajitasarkar.github.io/ (a user site),
+// Deployed at the root of https://aparaxsarkar.github.io/ (a user site),
 // but a relative base keeps the build portable (project pages, previews, file://).
 export default defineConfig({
   base: './',

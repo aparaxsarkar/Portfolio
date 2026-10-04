@@ -8,7 +8,7 @@
 
 .carousel__viewport {
   position: relative;
-  height: calc(var(--card-h) + 3.5rem);
+  height: calc(var(--card-h) + 2 * var(--carousel-pad));
   column-gap: var(--carousel-gap); /* read by the carousel engine as the card gap */
   overflow-x: clip;
   touch-action: pan-y;

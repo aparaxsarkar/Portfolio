@@ -1,7 +1,7 @@
 import type { CardLink } from './types'
 
 /** GitHub account used when a repo is given as a bare name, e.g. github('my-repo'). */
-const OWNER = 'aparajitasarkar'
+const OWNER = 'aparaxsarkar'
 
 /** Link to a repository: pass a full URL, or just the repo name. */
 export const github = (repoOrUrl: string): CardLink => ({

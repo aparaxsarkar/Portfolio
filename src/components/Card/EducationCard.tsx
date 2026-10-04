@@ -11,12 +11,13 @@ interface EducationCardProps {
 
 /**
  * A credential, not a project: degree · years, university, then quiet metadata. Same card shell and dimensions as
- * every other card. Optional fields are omitted entirely when absent.
+ * every other card, except that the height follows the content (no reserved space; a set of cards shares the tallest one's height). Optional fields are omitted
+ * entirely when absent.
  */
 export function EducationCard({ entry, ref, position, total }: EducationCardProps) {
   const { degree, years, university, gpa, distinction, link } = entry
   return (
-    <div ref={ref} className="card" role="group" aria-roledescription="slide" aria-label={`${position} of ${total}`}>
+    <div ref={ref} className="card card--compact" role="group" aria-roledescription="slide" aria-label={`${position} of ${total}`}>
       <p className="card__tags">
         {degree} · {years}
       </p>

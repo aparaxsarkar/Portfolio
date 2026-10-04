@@ -15,7 +15,7 @@ export const site = {
     /** PLACEHOLDER */
     blurb: '[PLACEHOLDER: a short, warm closing paragraph inviting people to get in touch.]',
     links: [
-      { label: 'GitHub', href: 'https://github.com/aparajitasarkar', note: 'github.com/aparajitasarkar' },
+      { label: 'GitHub', href: 'https://github.com/aparaxsarkar', note: 'github.com/aparaxsarkar' },
       { label: 'LinkedIn', href: 'https://www.linkedin.com/in/PLACEHOLDER', note: 'linkedin.com/in/…' },
       { label: 'Email', href: 'mailto:hello@example.com', note: 'hello@example.com' },
       { label: 'Resume', href: '#', note: 'PDF · placeholder' },

@@ -37,6 +37,15 @@
   cursor: pointer;
 }
 
+.card--compact {
+  /* Height follows the content (the carousel then equalises a set to its tallest card). The top edge stays where
+     every other section's cards start (see margin-top above). */
+  height: auto;
+  /* Pinned to the same top edge a fixed-size card has: (box − card-h)/2 = --carousel-pad. */
+  top: var(--carousel-pad);
+  margin-top: 0;
+}
+
 .card__tags {
   margin: 0;
   font-family: var(--font-mono);

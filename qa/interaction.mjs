@@ -296,9 +296,9 @@ const navShape = (page) =>
 {
   const { context, page } = await open()
   const links = await page.$$eval('.card__link', (as) => as.map((a) => ({ section: a.closest('section').id, text: a.textContent.trim(), aria: a.getAttribute('aria-label'), host: new URL(a.href).hostname })))
-  const expect = { experiences: ['Details ↗', 'example.com'], projects: ['GitHub ↗', 'github.com'], research: ['GitHub ↗', 'github.com'], education: ['Details ↗', 'example.com'], achievements: ['Certificate ↗', 'example.com'], extracurricular: ['View ↗', 'example.com'] }
+  const expect = { experiences: ['Details ↗', 'example.com'], projects: ['GitHub ↗', 'github.com'], research: ['GitHub ↗', 'github.com'], achievements: ['Certificate ↗', 'example.com'], extracurricular: ['View ↗', 'example.com'] }
   const wrong = links.filter((l) => !expect[l.section] || l.text !== expect[l.section][0] || l.host !== expect[l.section][1] || !l.aria.toLowerCase().startsWith(l.text.replace(' ↗', '').toLowerCase()))
-  check('card link label, accessible name and host agree in every section', links.length === 4 + 7 + 4 + 1 + 4 + 3 && wrong.length === 0, wrong.length ? JSON.stringify(wrong[0]) : `${links.length} links; GitHub only on projects/research`)
+  check('card link label, accessible name and host agree in every section', links.length === 4 + 7 + 4 + 0 + 4 + 3 && wrong.length === 0, wrong.length ? JSON.stringify(wrong[0]) : `${links.length} links; GitHub only on projects/research`)
   const bare = await page.$$eval('#extracurricular .card', (cs) => cs.map((c) => c.querySelectorAll('a').length))
   check('an entry with no destination simply omits the link (no dead or fake link)', bare.filter((n) => n === 0).length === 1 && bare.length === 4, JSON.stringify(bare))
   await context.close()
@@ -321,9 +321,24 @@ const navShape = (page) =>
     })),
   )
   check('education cards have no summary paragraph', cards.every((c) => !c.hasDesc))
-  check('hierarchy: degree · years → university → metadata → link', cards[0].order.join(',') === 'card__tags,card__title,card__meta,card__link' && /·/.test(cards[0].top), JSON.stringify(cards[0].order))
+  check('hierarchy: degree · years → university → metadata (no link)', cards[0].order.join(',') === 'card__tags,card__title,card__meta' && /·/.test(cards[0].top), JSON.stringify(cards[0].order))
   check('undergrad shows "GPA: 3.7 / 4.0" and "Honors: Data Science"', cards[0].meta.join('|') === 'GPA: 3.7 / 4.0|Honors: Data Science', JSON.stringify(cards[0].meta))
-  check('absent optional fields are omitted (no distinction line, no link on the second entry)', cards[1].meta.length === 1 && cards[1].links === 0, JSON.stringify({ meta: cards[1].meta, links: cards[1].links }))
+  check('absent optional fields are omitted (no distinction line on the second entry; education has no link)', cards[1].meta.length === 1 && cards.every((c) => c.links === 0), JSON.stringify({ meta: cards[1].meta, links: cards[1].links }))
+  const fit = await page.$$eval('#education .card', (cs) =>
+    cs.map((c) => {
+      const kids = [...c.children]
+      const last = kids[kids.length - 1].getBoundingClientRect().bottom
+      const pad = parseFloat(getComputedStyle(c).paddingBottom)
+      const b = parseFloat(getComputedStyle(c).borderBottomWidth)
+      const natural = (() => { const h = c.style.height; c.style.height = 'auto'; const n = c.offsetHeight; c.style.height = h; return n })()
+      return { spare: +(c.getBoundingClientRect().bottom - last - pad - b).toFixed(1), h: c.offsetHeight, natural, border: getComputedStyle(c).borderTopWidth, padding: getComputedStyle(c).padding }
+    }),
+  )
+  const stdH = await page.$eval('#projects .card', (c) => c.offsetHeight)
+  const stdBorder = await page.$eval('#projects .card', (c) => getComputedStyle(c).borderTopWidth + '|' + getComputedStyle(c).padding)
+  const tallest = Math.max(...fit.map((f) => f.natural))
+  check('education cards are all the height of the tallest (no taller than its content needs)', fit.every((f) => f.h === tallest) && fit.some((f) => f.natural !== tallest) && fit.some((f) => Math.abs(f.spare) <= 1) && tallest < stdH * 0.7, JSON.stringify(fit.map((f) => ({ h: f.h, natural: f.natural, spare: f.spare }))) + ` (standard card ${stdH}px)`)
+  check('education cards keep the same border width and padding as every other card', fit.every((f) => f.border + '|' + f.padding === stdBorder), stdBorder)
   check('GPA is quiet: body-size text, no badge/meter/progress bar', cards.every((c) => !c.badge) && parseFloat(cards[0].metaFont) < parseFloat(cards[0].titleFont) / 1.5, `${cards[0].metaFont} vs title ${cards[0].titleFont}`)
   await context.close()
 }

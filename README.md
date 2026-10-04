@@ -6,7 +6,7 @@ dusty pink horizon, the sun rises, the stars fade out, and the journey ends exac
 into daytime, and nothing is held or stationary at the end: the world is still moving at the last pixel of the page. Shadows lengthen out of nothing as the sun clears the rocks. Content (experiences, projects, research,
 …) is ordinary accessible HTML laid over the scene.
 
-Live at **https://aparajitasarkar.github.io/** (see [Deployment](#deployment)).
+Live at **https://aparaxsarkar.github.io/** (see [Deployment](#deployment)).
 
 ## Stack
 
@@ -157,11 +157,16 @@ Edit the Chrome path at the top of each script if you are not on macOS.
 
 ## Deployment
 
-`.github/workflows/deploy.yml` builds and publishes `dist/` to GitHub Pages. It is currently **manual-only** (`workflow_dispatch`): run it from the Actions tab. Re-add the `push` trigger in that file to deploy on every push to `main`.
+Target: **https://aparaxsarkar.github.io/**. GitHub only serves a user site at that root URL from a repository named
+exactly **`aparaxsarkar.github.io`**, and Pages from a *private* repository needs a paid plan, so the repository must be
+**public**.
 
-1. Create the repository **`aparajitasarkar.github.io`** (the user-site repo name is what makes it live at the root).
-2. Push this project to its `main` branch.
-3. In *Settings → Pages*, set **Source: GitHub Actions**.
+1. Name the repository `aparaxsarkar.github.io` and make it public (rename this repo, or create a new one and push `main` to it).
+2. *Settings → Pages → Build and deployment → Source:* **GitHub Actions**.
+3. *Actions → Deploy to GitHub Pages → Run workflow.* The workflow lints, builds and publishes `dist/`.
+
+The workflow is currently **manual-only** (`workflow_dispatch`), so a push never triggers a failing run before the steps above
+are done. To deploy on every push to `main`, add `push: { branches: [main] }` under `on:` in `.github/workflows/deploy.yml`.
 
 The Vite `base` is `./`, so assets resolve at the domain root or under a sub-path. There is no client-side router
 (sections are in-page anchors), so there are no deep links for Pages to 404.

@@ -53,6 +53,7 @@
   --hero-offset: 25svh;
   --contact-offset: 13svh;
   --head-lift: 6.5rem; /* how far section titles float above the content block */
+  --section-gap: clamp(3.5rem, 9svh, 7rem); /* last visible element of a section → the space before the next section starts */
   --head-gap: clamp(2.2rem, 5.5svh, 3.5rem); /* title → carousel */
   --title-shift: 1.2rem; /* pad-top that holds the title where it sat when an ordinal stood above it */
 
@@ -61,6 +62,7 @@
   --card-h: calc(var(--card-w) * 0.72); /* room for tags, a two-line title and a five-line summary */
   --card-pad: clamp(1.25rem, 1.9vw, 1.9rem);
   --carousel-gap: 1.5rem;
+  --carousel-pad: 1.75rem; /* room above (and, for fixed-size cards, below) the cards for scale and shadow */
 
   /* ── Navigation ── */
   --nav-top: 0.75rem;

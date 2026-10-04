@@ -1,9 +1,8 @@
-import { external } from './links'
 import type { EducationEntry } from './types'
 
 /**
  * PLACEHOLDER CONTENT — bracketed values are placeholders.
- * Only degree, years and university are required; gpa, distinction and link appear on the card only when present.
+ * Only degree, years and university are required; gpa and distinction appear on the card only when present.
  */
 export const education: EducationEntry[] = [
   {
@@ -13,7 +12,6 @@ export const education: EducationEntry[] = [
     university: '[UNIVERSITY]',
     gpa: '3.7 / 4.0',
     distinction: 'Honors: Data Science',
-    link: external('Details', 'https://example.com/PLACEHOLDER-education-1'),
   },
   {
     id: 'edu-2',
