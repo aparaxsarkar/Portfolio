@@ -48,13 +48,6 @@
   text-shadow: var(--ink-halo);
 }
 
-/* On wide screens the tagline is wide enough for the intro to settle at four lines. */
-@media (min-width: 1200px) {
-  .hero__intro {
-    font-size: 0.9rem;
-  }
-}
-
 .hero__cue {
   position: absolute;
   left: 50%;
