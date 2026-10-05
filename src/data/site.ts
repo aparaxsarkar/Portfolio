@@ -6,9 +6,8 @@ export const site = {
   firstName: 'APARAJITA',
   lastName: 'SARKAR',
   tagline: 'Building intelligent systems that work.',
-  /** PLACEHOLDER — replace with the real introduction. */
   intro:
-    '[PLACEHOLDER: short personal introduction — two or three sentences on who I am, what I build, and what I am looking for next.]',
+    'I’m interested in the space where machine learning meets software engineering: building systems that are not only intelligent, but useful, reliable, and built to work in the real world. I’m always looking for interesting things worth building, and people to build them with.',
   scrollCue: 'SCROLL TO EXPLORE',
   contact: {
     heading: "LET'S BUILD SOMETHING",
