@@ -1,5 +1,5 @@
 import { DESIGN_HEIGHT, DPR_CAP, HORIZON } from '../config/world'
-import { createGrainTile } from './render/grain'
+import { createGrainTile, createSoftGrainTile } from './render/grain'
 import { drawLand } from './render/land'
 import { buildScene, type Scene } from './render/scene'
 import { drawSky } from './render/sky'
@@ -97,7 +97,7 @@ export function createWorldRenderer(root: HTMLElement) {
     }
     const tile = createGrainTile()
     grainSky = skyCtx.createPattern(tile, 'repeat')
-    grainLand = landCtx.createPattern(tile, 'repeat')
+    grainLand = landCtx.createPattern(createSoftGrainTile(), 'repeat') // softer: see createSoftGrainTile
     scene = buildScene(view.widthD)
     field = createStarfield(view)
     shooting.reset()
