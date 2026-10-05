@@ -16,8 +16,8 @@ export const site = {
     blurb: '[PLACEHOLDER: a short, warm closing paragraph inviting people to get in touch.]',
     links: [
       { label: 'GitHub', href: 'https://github.com/aparaxsarkar', note: 'github.com/aparaxsarkar' },
-      { label: 'LinkedIn', href: 'https://www.linkedin.com/in/PLACEHOLDER', note: 'linkedin.com/in/…' },
-      { label: 'Email', href: 'mailto:hello@example.com', note: 'hello@example.com' },
+      { label: 'LinkedIn', href: 'https://www.linkedin.com/in/aparajita-sarkar/', note: 'linkedin.com/in/aparajita-sarkar' },
+      { label: 'Email', href: 'mailto:aparajita.sarkar.sj@gmail.com', note: 'aparajita.sarkar.sj@gmail.com' },
       { label: 'Resume', href: '#', note: 'PDF · placeholder' },
     ] satisfies ContactLink[],
   },
