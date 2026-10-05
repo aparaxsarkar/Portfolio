@@ -6,7 +6,7 @@ dusty pink horizon, the sun rises, the stars fade out, and the journey ends exac
 into daytime, and nothing is held or stationary at the end: the world is still moving at the last pixel of the page. Shadows lengthen out of nothing as the sun clears the rocks. Content (experiences, projects, research,
 …) is ordinary accessible HTML laid over the scene.
 
-Live at **https://aparaxsarkar.github.io/** (see [Deployment](#deployment)).
+Live at **https://aparaxsarkar.github.io/Portfolio/** (see [Deployment](#deployment)).
 
 ## Stack
 
@@ -157,19 +157,17 @@ Edit the Chrome path at the top of each script if you are not on macOS.
 
 ## Deployment
 
-Target: **https://aparaxsarkar.github.io/**. GitHub only serves a user site at that root URL from a repository named
-exactly **`aparaxsarkar.github.io`**, and Pages from a *private* repository needs a paid plan, so the repository must be
-**public**.
+Target: **https://aparaxsarkar.github.io/Portfolio/** — a GitHub Pages *project site* (any repository can have one, at
+`<user>.github.io/<repo>/`). Pages from a *private* repository needs a paid plan, so the repository must be **public**.
 
-1. Name the repository `aparaxsarkar.github.io` and make it public (rename this repo, or create a new one and push `main` to it).
+1. Make `aparaxsarkar/Portfolio` public (*Settings → General → Danger Zone → Change visibility*).
 2. *Settings → Pages → Build and deployment → Source:* **GitHub Actions**.
-3. *Actions → Deploy to GitHub Pages → Run workflow.* The workflow lints, builds and publishes `dist/`.
+3. Push to `main` (or run the workflow by hand). The workflow lints, builds and publishes `dist/`.
 
-The workflow is currently **manual-only** (`workflow_dispatch`), so a push never triggers a failing run before the steps above
-are done. To deploy on every push to `main`, add `push: { branches: [main] }` under `on:` in `.github/workflows/deploy.yml`.
+The workflow deploys on every push to `main`, and can also be run by hand (*Actions → Deploy to GitHub Pages → Run workflow*).
 
-The Vite `base` is `./`, so assets resolve at the domain root or under a sub-path. There is no client-side router
-(sections are in-page anchors), so there are no deep links for Pages to 404.
+The Vite `base` is `./`, so assets resolve under the `/Portfolio/` sub-path (and at a domain root). There is no client-side
+router (sections are in-page anchors), so there are no deep links for Pages to 404.
 
 ## Accessibility & motion
 
