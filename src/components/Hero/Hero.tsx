@@ -9,8 +9,10 @@ export function Hero() {
         <h1 id="hero-name" className="hero__name">
           <span className="hero__name-part">{site.firstName}</span> <span className="hero__name-part">{site.lastName}</span>
         </h1>
-        <p className="hero__tagline">{site.tagline}</p>
-        <p className="hero__intro">{site.intro}</p>
+        <div className="hero__lede">
+          <p className="hero__tagline">{site.tagline}</p>
+          <p className="hero__intro">{site.intro}</p>
+        </div>
       </div>
       <p className="hero__cue" aria-hidden="true">
         <span>{site.scrollCue}</span>

@@ -32,13 +32,27 @@
   text-shadow: var(--ink-halo);
 }
 
+/* The lede is as wide as its tagline; the intro matches that width without widening it. */
+.hero__lede {
+  width: fit-content;
+  max-width: 100%;
+}
+
 .hero__intro {
-  max-width: clamp(16rem, 21vw, 24rem);
+  width: 0;
+  min-width: 100%;
   margin: clamp(1.1rem, 2.6svh, 1.75rem) 0 0;
   font-size: 1rem;
   line-height: 1.7;
   color: var(--ui-ink);
   text-shadow: var(--ink-halo);
+}
+
+/* On wide screens the tagline is wide enough for the intro to settle at four lines. */
+@media (min-width: 1200px) {
+  .hero__intro {
+    font-size: 0.9rem;
+  }
 }
 
 .hero__cue {
