@@ -12,8 +12,8 @@ export const site = {
   scrollCue: 'SCROLL TO EXPLORE',
   contact: {
     heading: "LET'S BUILD SOMETHING",
-    /** PLACEHOLDER */
-    blurb: '[PLACEHOLDER: a short, warm closing paragraph inviting people to get in touch.]',
+    blurb:
+      'I’m currently pursuing full-time opportunities in AI/ML and software engineering starting May 2027 or later. While recent CPT restrictions mean I won’t be able to pursue internships before graduation, I’m always open to meeting curious people, exchanging ideas, and building cool things together. If you’re working on something interesting—or simply want to get in touch—don’t hesitate to reach out.',
     links: [
       { label: 'GitHub', href: 'https://github.com/aparaxsarkar', note: 'github.com/aparaxsarkar' },
       { label: 'LinkedIn', href: 'https://www.linkedin.com/in/aparajita-sarkar/', note: 'linkedin.com/in/aparajita-sarkar' },
