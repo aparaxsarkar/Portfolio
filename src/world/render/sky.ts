@@ -81,6 +81,18 @@ export function drawSky(ctx: CanvasRenderingContext2D, state: WorldState, view: 
     }
   }
 
+  // Paper tooth + dither for the sky itself. Painted BEFORE the sun on purpose: the sun is a light source, so it must sit on
+  // top of the texture rather than be speckled by it (an overlay painted last put dark specks on the bright disc, and on
+  // phones — where this canvas is stretched 1.3–2× — they read as coarse grain).
+  if (grain) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.globalAlpha = 0.4
+    ctx.fillStyle = grain
+    ctx.fillRect(0, 0, w * dpr, h * dpr)
+    ctx.globalAlpha = 1
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0) // back to CSS-pixel coordinates for the sun
+  }
+
   // Sun: wide scattering halo → tight bloom → soft-edged disc, larger near the horizon.
   if (sun.intensity > 0.002 || sun.glowStrength > 0.002) {
     const I = sun.intensity
@@ -109,13 +121,5 @@ export function drawSky(ctx: CanvasRenderingContext2D, state: WorldState, view: 
     ctx.beginPath()
     ctx.arc(sx, sy, r * 1.22, 0, Math.PI * 2)
     ctx.fill()
-  }
-
-  if (grain) {
-    ctx.setTransform(1, 0, 0, 1, 0, 0)
-    ctx.globalAlpha = 0.4
-    ctx.fillStyle = grain
-    ctx.fillRect(0, 0, w * dpr, h * dpr)
-    ctx.globalAlpha = 1
   }
 }
