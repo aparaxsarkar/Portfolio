@@ -148,6 +148,7 @@ node qa/interaction.mjs                 # nav, carousel (keys/drag/touch/wheel/f
 node qa/lighting.mjs                    # lighting continuity: (A) sweeps progress, (B) sweeps the sun across every formation; fails on any abrupt tonal change
 node qa/journey.mjs <dir> [WxH] [p,…]   # world-only filmstrip of the night → dawn journey at explicit progress values
 node qa/percent.mjs <dir> [WxH] [0,25,…] # the real page (UI included) at given % of the scroll range
+node qa/sun-composite.mjs --engine=chromium|webkit --max-disc=0.6 --max-glow=0.9 --only-served   # noise in the sun disc/glow on the FINAL composited pixels, Chrome or WebKit (Safari's engine), layer by layer
 node qa/sun-grain.mjs                   # pixel noise inside the sun disc at 1×/2×/3× densities (fails above a threshold with --max=0.5)
 node qa/sunrise.mjs                     # terminal sun: fully visible and resting on the skyline, measured from pixels, 5 viewports
 node qa/mesa-strip.mjs <dir> [mesa]     # renders a filmstrip around a formation + checks forward→back is pixel-identical
