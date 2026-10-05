@@ -15,11 +15,18 @@ import type { WorldState } from '../state'
  * `tanh((sunX − x)/range)` — continuous in the sun's position — combined with a height derived from its
  * elevation. The result is upscaled with bilinear filtering, which is what gives it a painted, tonal look:
  * soft regions of light and shade that slide across the dunes as the sun moves, with no outlines.
+ *
+ * The normals are smoothed once at build time, and the grid is dense enough (see GW/GH) that the stretch to the screen
+ * never shows its cells; the top of the field feathers into the layer above it through the per-cell alpha.
  */
 
 const HZ = HORIZON * DESIGN_HEIGHT
-const GW = 224
-const GH = 112
+const GW = 320
+const GH = 224
+/** The dunes fade in over this many design px below the ridge that bounds them, instead of starting at a hard edge. */
+const EDGE_FADE = 44
+/** How many times the surface normals are smoothed with a 1-2-1 kernel (once per resize; widens shadow edges so the stretch to the screen can't show steps). */
+const NORMAL_SMOOTHING_PASSES = 2
 const RELIEF = 104 // design px of vertical relief the height field represents
 const FORESHORTEN = 2.4 // the ground plane is foreshortened on screen, so slopes along y read steeper
 
@@ -29,6 +36,9 @@ export interface GroundField {
   y0: number
   y1: number
   colX: Float32Array
+  /** Design y of each row's centre, and of the bounding ridge in each column. */
+  rowY: Float32Array
+  colEdge: Float32Array
   depth: Float32Array // per row, 0 at the horizon → 1 at the bottom of the screen
   nx: Float32Array
   ny: Float32Array
@@ -38,7 +48,7 @@ export interface GroundField {
   image: ImageData
 }
 
-export function buildGround(widthD: number): GroundField {
+export function buildGround(widthD: number, edgeAt: (x: number) => number): GroundField {
   const noise = createNoise2D(4417)
   const patch = createNoise2D(9091)
   const x0 = -8
@@ -52,7 +62,13 @@ export function buildGround(widthD: number): GroundField {
   const tone = new Float32Array(GW * GH)
   const colX = new Float32Array(GW)
   const depth = new Float32Array(GH)
-  for (let i = 0; i < GW; i++) colX[i] = x0 + (i + 0.5) * dx
+  const rowY = new Float32Array(GH)
+  const colEdge = new Float32Array(GW)
+  for (let i = 0; i < GW; i++) {
+    colX[i] = x0 + (i + 0.5) * dx
+    colEdge[i] = edgeAt(colX[i])
+  }
+  for (let j = 0; j < GH; j++) rowY[j] = y0 + (j + 0.5) * dy
   for (let j = 0; j < GH; j++) depth[j] = clamp((y0 + (j + 0.5) * dy - HZ) / (DESIGN_HEIGHT - HZ))
 
   for (let j = 0; j < GH; j++) {
@@ -101,11 +117,43 @@ export function buildGround(widthD: number): GroundField {
     }
   }
 
+  smoothNormals(nx, ny, nz)
+
   const canvas = document.createElement('canvas')
   canvas.width = GW
   canvas.height = GH
   const image = canvas.getContext('2d')!.createImageData(GW, GH)
-  return { x0, x1, y0, y1, colX, depth, nx, ny, nz, tone, canvas, image }
+  return { x0, x1, y0, y1, colX, rowY, colEdge, depth, nx, ny, nz, tone, canvas, image }
+}
+
+/** Separable 1-2-1 smoothing of the normal field (edges clamp), then renormalise. Runs once per resize. */
+function smoothNormals(nx: Float32Array, ny: Float32Array, nz: Float32Array) {
+  const tmp = new Float32Array(GW * GH)
+  const pass = (a: Float32Array) => {
+    for (let j = 0; j < GH; j++)
+      for (let i = 0; i < GW; i++) {
+        const l = j * GW + Math.max(0, i - 1)
+        const r = j * GW + Math.min(GW - 1, i + 1)
+        tmp[j * GW + i] = 0.25 * a[l] + 0.5 * a[j * GW + i] + 0.25 * a[r]
+      }
+    for (let j = 0; j < GH; j++)
+      for (let i = 0; i < GW; i++) {
+        const u = Math.max(0, j - 1) * GW + i
+        const d = Math.min(GH - 1, j + 1) * GW + i
+        a[j * GW + i] = 0.25 * tmp[u] + 0.5 * tmp[j * GW + i] + 0.25 * tmp[d]
+      }
+  }
+  for (let n = 0; n < NORMAL_SMOOTHING_PASSES; n++) {
+    pass(nx)
+    pass(ny)
+    pass(nz)
+  }
+  for (let k = 0; k < nx.length; k++) {
+    const m = Math.hypot(nx[k], ny[k], nz[k]) || 1
+    nx[k] /= m
+    ny[k] /= m
+    nz[k] /= m
+  }
 }
 
 /** Light the floor for the current world state and upload it to the field's canvas. */
@@ -136,6 +184,7 @@ export function shadeGround(field: GroundField, state: WorldState, widthD: numbe
     const t = field.depth[j]
     const rowBase = desaturate(mixFast(T.groundBack, T.groundFront, t ** 0.8), (1 - t) ** 1.6 * 0.4)
     const hazeAmt = (1 - t) ** 1.7 * 0.6 * atm
+    const y = field.rowY[j]
     for (let i = 0; i < GW; i++) {
       const k = j * GW + i
       const d = (field.nx[k] * lx[i] + field.ny[k] * ly + field.nz[k] * lzs[i]) * ln[i]
@@ -162,7 +211,7 @@ export function shadeGround(field: GroundField, state: WorldState, widthD: numbe
       data[o] = r
       data[o + 1] = g
       data[o + 2] = b
-      data[o + 3] = 255
+      data[o + 3] = 255 * smoothstep(0, EDGE_FADE, y - field.colEdge[i]) // feathered top edge: the dunes fade in below the ridge
     }
   }
   field.canvas.getContext('2d')!.putImageData(field.image, 0, 0)

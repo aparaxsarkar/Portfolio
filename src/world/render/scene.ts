@@ -24,6 +24,8 @@ export interface Ridge {
   fill: Path2D
   /** Highest point (smallest y) of the ridge. */
   top: number
+  /** Ridge height (design y) at any x, linearly interpolated between the sampled points. */
+  at: (x: number) => number
 }
 
 const gauss = (u: number, centre: number, width: number) => Math.exp(-(((u - centre) / width) ** 2))
@@ -43,18 +45,27 @@ function buildRidge(
   const fbm = createFbm1D(opts.seed, opts.octaves ?? 4)
   const fill = new Path2D()
   const bottom = DESIGN_HEIGHT + 40
+  const STEP = 5
+  const X0 = -24
+  const ys: number[] = []
   let top = opts.baseY
-  fill.moveTo(-24, bottom)
-  for (let x = -24; x <= widthD + 24; x += 5) {
+  fill.moveTo(X0, bottom)
+  for (let x = X0; x <= widthD + 24; x += STEP) {
     const n = fbm(x * opts.freq)
     const shaped = clamp((n - 0.3) * 2.1) ** (opts.sharp ?? 1)
     const y = opts.baseY - opts.amp * (opts.env ? opts.env(x / widthD) : 1) * shaped
     top = Math.min(top, y)
+    ys.push(y)
     fill.lineTo(x, y)
   }
   fill.lineTo(widthD + 24, bottom)
   fill.closePath()
-  return { fill, top }
+  const at = (x: number) => {
+    const f = clamp((x - X0) / STEP, 0, ys.length - 1.001)
+    const i = Math.floor(f)
+    return ys[i] + (ys[i + 1] - ys[i]) * (f - i)
+  }
+  return { fill, top, at }
 }
 
 // High at the edges, low through the centre-right where the sun sets.
@@ -318,6 +329,7 @@ export function buildScene(widthD: number): Scene {
   const K = clamp(widthD / 1100, 0.62, 1)
   // The skyline is lowered into a flat notch at the sun's resting x, at every width, so the finished sun can sit on it.
   const notch = (u: number) => 1 - SUN_SADDLE.depth * Math.exp(-((((u - SUN_PATH.x1) * widthD) / SUN_SADDLE.halfWidth) ** 2))
+  const groundEdge = buildRidge(widthD, { seed: 23, baseY: HZ + 40, amp: 34, freq: 0.0032, octaves: 3, env: notch })
   return {
     widthD,
     farRanges: [
@@ -326,8 +338,8 @@ export function buildScene(widthD: number): Scene {
     ],
     mesas: MESA_DEFS.filter((d) => wide(d.minWidth)).map((d) => buildMesa(narrow && d.narrow ? { ...d, ...d.narrow } : d, widthD, K)),
     hills: buildRidge(widthD, { seed: 41, baseY: HZ + 8, amp: 36, freq: 0.0054, octaves: 3, env: notch }),
-    groundEdge: buildRidge(widthD, { seed: 23, baseY: HZ + 40, amp: 34, freq: 0.0032, octaves: 3, env: notch }),
-    ground: buildGround(widthD),
+    groundEdge,
+    ground: buildGround(widthD, groundEdge.at),
     cacti: CACTUS_DEFS.filter((d) => wide(d.minWidth)).map((d) => ({
       shape: CACTUS_SHAPES[d.shape],
       x: place(d.anchor, d.x, widthD),

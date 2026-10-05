@@ -197,12 +197,10 @@ export function drawLand(
   {
     const g = scene.ground
     shadeGround(g, state, widthD)
-    ctx.save()
-    ctx.clip(scene.groundEdge.fill)
+    // The field carries its own alpha (feathered along the ridge), so no clip: a clip would put a hard edge back.
     ctx.imageSmoothingEnabled = true
     ctx.imageSmoothingQuality = 'high'
     ctx.drawImage(g.canvas, g.x0, g.y0, g.x1 - g.x0, g.y1 - g.y0)
-    ctx.restore()
   }
 
   // ── Shadows (one geometry, driven by the sun) ────────────────────────
