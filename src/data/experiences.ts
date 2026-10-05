@@ -5,10 +5,10 @@ import type { CardItem } from './types'
 export const experiences: CardItem[] = [
   {
     id: 'exp-1',
-    title: '[ROLE TITLE], [COMPANY]',
-    tags: ['Python', 'LLMs', 'AWS'],
-    description: '[PLACEHOLDER SUMMARY: where you worked and what the team was building. Two or three sentences on what you personally built or owned, the scale it ran at, and the result it delivered. Say what you personally built or owned. Name the outcome plainly, with a.]',
-    link: external('Details', 'https://example.com/PLACEHOLDER-experience-1'),
+    title: 'MACHINE LEARNING RESEARCH INTERN, AIML.COM',
+    tags: ['Python', 'PyTorch', 'Hugging Face', 'LLMs'],
+    description:
+      'Benchmarked parameter-efficient fine-tuning and alignment pipelines for LLM by implementing LoRA, adapters, and DPO with PyTorch and Hugging Face PEFT/TRL in Python. Built a 134K-parameter CNN-LSTM multimodal fusion model for visual question answering, achieving 99.08% test accuracy.',
   },
   {
     id: 'exp-2',
@@ -23,12 +23,5 @@ export const experiences: CardItem[] = [
     tags: ['PyTorch', 'MLOps', 'Docker'],
     description: '[PLACEHOLDER SUMMARY: what the work was, what you personally built or shipped, and the outcome it had for the team or its users — kept to about four lines. Mention the result, not only… Mention the result, not only the method. Keep it scannable: purpose.]',
     link: external('Details', 'https://example.com/PLACEHOLDER-experience-3'),
-  },
-  {
-    id: 'exp-4',
-    title: '[ROLE TITLE], [COMPANY]',
-    tags: ['Java', 'Microservices', 'Kafka'],
-    description: '[PLACEHOLDER SUMMARY: the team, the problem, and your contribution. Mention the systems you designed or improved, how it was validated, and the difference it made once it shipped. Keep it scannable: purpose, build, outcome. Say why it mattered and to whom.]',
-    link: external('Details', 'https://example.com/PLACEHOLDER-experience-4'),
   },
 ]
