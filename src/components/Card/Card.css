@@ -90,7 +90,7 @@
   margin: 0.9rem 0 0;
   padding: 0;
   list-style: none;
-  font-size: var(--text-sm);
+  font-size: calc(var(--text-sm) + 1px); /* 14px, matching the card descriptions */
   line-height: 1.5;
   color: var(--ui-card-muted);
 }
