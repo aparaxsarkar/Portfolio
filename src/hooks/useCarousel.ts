@@ -51,8 +51,9 @@ export function useCarousel(count: number) {
     isStatic: false,
     suppressClick: false,
     wheelAcc: 0,
-    wheelAt: 0,
     wheelIdle: 0,
+    /** Direction (±1) of the card step this swipe has already made; 0 when free to step. */
+    wheelSpent: 0,
     tick: null as unknown as FrameRequestCallback,
   })
   const drag = useRef<{
@@ -195,12 +196,22 @@ export function useCarousel(count: number) {
       if (s.isStatic || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return
       e.preventDefault()
       const now = performance.now()
-      if (now - s.wheelIdle > 160) s.wheelAcc = 0
+      // A trackpad swipe keeps sending events for a second or so as it coasts. One swipe moves one card; the swipe is
+      // over when the events stop, or when they turn around (a deliberate swipe back).
+      if (now - s.wheelIdle > 160) {
+        s.wheelAcc = 0
+        s.wheelSpent = 0
+      }
       s.wheelIdle = now
+      if (s.wheelSpent && Math.sign(e.deltaX) === -s.wheelSpent && Math.abs(e.deltaX) >= 6) {
+        s.wheelAcc = 0
+        s.wheelSpent = 0
+      }
+      if (s.wheelSpent) return
       s.wheelAcc += e.deltaX
-      if (Math.abs(s.wheelAcc) >= CAROUSEL.wheelThreshold && now - s.wheelAt > CAROUSEL.wheelCooldown) {
-        s.wheelAt = now
-        goTo(s.target + Math.sign(s.wheelAcc))
+      if (Math.abs(s.wheelAcc) >= CAROUSEL.wheelThreshold) {
+        s.wheelSpent = Math.sign(s.wheelAcc)
+        goTo(s.target + s.wheelSpent)
         s.wheelAcc = 0
       }
     }

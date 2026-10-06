@@ -261,6 +261,25 @@ const navShape = (page) =>
   await page.waitForTimeout(800)
   check('horizontal wheel back moves toward the first card', (await activeIndex(page, sel)) === afterDrag - 1 || afterDrag === 0)
 
+  // A trackpad flick keeps sending (decaying) wheel events for ~1s; it must still move exactly one card, either way.
+  const flick = async (sign, peak = 60, ms = 900) => {
+    const ev = Array.from({ length: 8 }, (_, i) => (peak * (i + 1)) / 8)
+    for (let v = peak; v > 1 && ev.length * 16 < ms; ) ev.push((v *= 0.93))
+    for (const d of ev) {
+      await page.mouse.wheel(sign * d, 0)
+      await page.waitForTimeout(16)
+    }
+  }
+  await page.waitForTimeout(400)
+  const f0 = await activeIndex(page, sel)
+  await flick(-1)
+  await page.waitForTimeout(500)
+  const f1 = await activeIndex(page, sel)
+  await flick(+1)
+  await page.waitForTimeout(500)
+  const f2 = await activeIndex(page, sel)
+  check('one trackpad flick moves exactly one card, in both directions', f0 - f1 === 1 && f2 - f1 === 1, `${f0} → ${f1} → ${f2}`)
+
   // Clicking a side card brings it forward; focusing its link does too.
   await page.click(`${sel} .carousel__btn[aria-label="Previous project"]`)
   await page.waitForTimeout(700)

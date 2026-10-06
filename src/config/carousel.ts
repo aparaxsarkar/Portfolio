@@ -12,9 +12,8 @@ export const CAROUSEL = {
   flingSeconds: 0.14,
   /** Max cards a single fling can skip. */
   maxFling: 2,
-  /** Trackpad horizontal-swipe: accumulated delta needed, and cooldown (ms). */
+  /** Trackpad horizontal-swipe: accumulated delta needed to move one card. */
   wheelThreshold: 48,
-  wheelCooldown: 380,
   /** Rubber-band resistance past either end (0–1). */
   edgeResistance: 0.32,
   /** Cards further than this from the centre are hidden. */
