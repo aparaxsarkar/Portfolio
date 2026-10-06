@@ -14,7 +14,7 @@ import { prefersReducedMotion } from './motion'
 /**
  * Compact cards (`.card--compact`, used by Education) size to their content; so that a set of them reads as a set, they
  * all take the height of the tallest. Natural heights are re-read each time, so removing a field shrinks them again.
- * Link-less cards (`.card--no-link`) are the standard tile size at minimum, so their box keeps the standard padding.
+ * Standard cards (`.card--fit`) are the standard tile size at minimum, so their box keeps the standard padding.
  */
 function equaliseCompactCards(cards: (HTMLElement | null)[]): { tallest: number; pads: number } | null {
   const compact = cards.filter((el): el is HTMLElement => !!el && el.classList.contains('card--compact'))
@@ -22,7 +22,7 @@ function equaliseCompactCards(cards: (HTMLElement | null)[]): { tallest: number;
   for (const el of compact) el.style.height = ''
   const tallest = Math.max(...compact.map((el) => el.offsetHeight))
   for (const el of compact) el.style.height = `${tallest}px`
-  return { tallest, pads: compact[0].classList.contains('card--no-link') ? 2 : 1 }
+  return { tallest, pads: compact[0].classList.contains('card--fit') ? 2 : 1 }
 }
 
 /**

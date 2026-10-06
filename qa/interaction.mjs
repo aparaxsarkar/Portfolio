@@ -299,8 +299,8 @@ const navShape = (page) =>
   const expect = { projects: ['GitHub ↗', 'github.com'], research: ['GitHub ↗', 'github.com'], achievements: ['Certificate ↗', 'example.com'], extracurricular: ['View ↗', 'example.com'] }
   const wrong = links.filter((l) => !expect[l.section] || l.text !== expect[l.section][0] || l.host !== expect[l.section][1] || !l.aria.toLowerCase().startsWith(l.text.replace(' ↗', '').toLowerCase()))
   check('card link label, accessible name and host agree in every section', links.length === 7 + 4 + 0 + 4 + 3 && wrong.length === 0, wrong.length ? JSON.stringify(wrong[0]) : `${links.length} links; GitHub only on projects/research`)
-  // Experiences cards carry no link, so they hold no room for one: the tile is the standard size or taller, never clipped.
-  check('experiences cards have no link and no clipped summary', await page.$$eval('#experiences .card', (cs) => cs.length > 0 && cs.every((c) => !c.querySelector('.card__link') && c.classList.contains('card--no-link') && c.querySelector('.card__desc').scrollHeight <= c.querySelector('.card__desc').clientHeight + 1)))
+  // Experiences cards carry no link and so reserve no room for one.
+  check('experiences cards have no link and no clipped summary', await page.$$eval('#experiences .card', (cs) => cs.length > 0 && cs.every((c) => !c.querySelector('.card__link') && c.querySelector('.card__desc').scrollHeight <= c.querySelector('.card__desc').clientHeight + 1)))
   const bare = await page.$$eval('#extracurricular .card', (cs) => cs.map((c) => c.querySelectorAll('a').length))
   check('an entry with no destination simply omits the link (no dead or fake link)', bare.filter((n) => n === 0).length === 1 && bare.length === 4, JSON.stringify(bare))
   await context.close()

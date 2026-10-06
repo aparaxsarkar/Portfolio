@@ -46,6 +46,12 @@
   margin-top: 0;
 }
 
+/* Cards are never clipped. The standard tile size is the minimum; a section whose longest card needs more room grows
+   every card to that card's height (see equaliseCompactCards), so a set always reads as a set. */
+.card--fit {
+  min-height: var(--card-h);
+}
+
 .card__tags {
   margin: 0;
   font-family: var(--font-mono);
@@ -53,9 +59,6 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ui-card-tag);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .card__title {
@@ -66,11 +69,6 @@
   line-height: 1.06;
   letter-spacing: -0.005em;
   color: var(--ui-card-fg);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
   text-wrap: balance;
 }
 
@@ -79,23 +77,6 @@
   font-size: var(--text-sm);
   line-height: 1.5;
   color: var(--ui-card-muted);
-  /* The summary is the card's main content: up to five lines, then an ellipsis. */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
-  line-clamp: 5;
-  overflow: hidden;
-}
-
-/* A card without a link holds no room for one. It keeps the standard tile size as a minimum and only grows (see
-   equaliseCompactCards) when its summary needs more lines than that size leaves — so the summary is never cut short. */
-.card--no-link {
-  min-height: var(--card-h);
-}
-
-.card--no-link .card__desc {
-  -webkit-line-clamp: 12;
-  line-clamp: 12;
 }
 
 .card__meta {
@@ -130,12 +111,4 @@
 .card__link:hover {
   color: var(--ui-accent);
   border-color: var(--ui-accent);
-}
-
-/* Phones have a narrower text column, so the same summary needs one more line. */
-@media (max-width: 720px) {
-  .card__desc {
-    -webkit-line-clamp: 6;
-    line-clamp: 6;
-  }
 }

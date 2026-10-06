@@ -10,12 +10,12 @@ interface CardProps {
   total: number
 }
 
-/** Card anatomy: tags · title · two-line description · optional labelled outbound link ↗. */
+/** Card anatomy: tags · title · description · optional labelled outbound link ↗. Nothing is ever clipped. */
 export function Card({ item, ref, position, total }: CardProps) {
   return (
     <div
       ref={ref}
-      className={item.link ? 'card' : 'card card--compact card--no-link'}
+      className="card card--compact card--fit"
       role="group"
       aria-roledescription="slide"
       aria-label={`${position} of ${total}`}
