@@ -5,7 +5,8 @@
   display: flex;
   flex-direction: column;
   /* Seated high, in the deeper sky: the sunrise below the block stays the event, and the text keeps clear of the glow. */
-  padding: calc(max(var(--contact-offset), 8rem) + var(--title-shift)) var(--gutter) 0;
+  --contact-top: calc(max(var(--contact-offset), 8rem) + var(--title-shift));
+  padding: var(--contact-top) var(--gutter) 0;
   outline: none;
 }
 
@@ -13,6 +14,13 @@
   width: min(100%, 60rem);
   margin-inline: auto;
   text-align: center;
+}
+
+/* The closing sun rests at 60.8% of the screen height and is about 8% of it across (SUN_PATH in config/world.ts; sky.ts).
+   The heading and paragraph take at least the space down to the bottom of the sun, so the links plate that follows
+   always sits below the sunrise and never covers it, whatever the screen shape or paragraph length. */
+.contact__head {
+  min-height: calc(64.9svh + 1.25rem - var(--contact-top));
 }
 
 .contact__title {
@@ -28,16 +36,23 @@
 }
 
 .contact__blurb {
-  max-width: 32rem;
+  position: relative;
+  isolation: isolate; /* the shade below stays behind this text but above the sky */
+  max-width: 46rem;
   margin: 1.5rem auto 0;
   line-height: 1.7;
   color: var(--ui-ink);
   text-shadow: var(--ink-halo);
 }
 
+/* The links sit in the same dark plate as the navigation: they land over sunlit sand, mesa and the sunrise glow, and
+   no text colour is legible on all of those. */
 .contact__links {
-  margin: clamp(2rem, 5svh, 3.25rem) 0 0;
-  padding: 0;
+  margin: 0;
+  padding: 0 1.25rem;
+  background: var(--ui-nav-bg);
+  border: 1px solid var(--ui-card-line);
+  border-radius: var(--radius-card);
   list-style: none;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
@@ -50,7 +65,6 @@
   flex-direction: column;
   gap: 0.3rem;
   padding: 1rem 0 1.1rem;
-  border-top: 1px solid var(--ui-rule);
   color: var(--ui-ink);
   text-decoration: none;
   transition:
@@ -87,4 +101,33 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ui-ink-muted);
+}
+
+/* Phones: the plate holds the four links as compact rows. */
+@media (max-width: 720px) {
+  /* On a narrow screen the closing paragraph runs long, which carries its last lines down over the pale horizon.
+     A soft shade that is clear at the top and deepens toward the bottom, with feathered edges, keeps them readable. */
+  .contact__blurb::before {
+    content: '';
+    position: absolute;
+    inset: -1rem -1rem -0.75rem;
+    z-index: -1;
+    border-radius: 1.25rem;
+    background: linear-gradient(to bottom, transparent 40%, var(--ui-ink-shadow) 85%);
+    filter: blur(8px);
+    pointer-events: none;
+  }
+  .contact__links {
+    grid-template-columns: 1fr;
+  }
+  .contact__link {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.15rem 0.9rem;
+    padding: 0.75rem 0;
+  }
+  .contact__links li + li .contact__link {
+    border-top: 1px solid var(--ui-rule);
+  }
 }

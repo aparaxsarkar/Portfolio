@@ -7,10 +7,12 @@ export function Contact() {
   return (
     <section id="contact" className="contact" aria-labelledby="contact-title" tabIndex={-1}>
       <div className="contact__inner">
-        <h2 id="contact-title" className="contact__title">
-          {heading}
-        </h2>
-        <p className="contact__blurb">{blurb}</p>
+        <div className="contact__head">
+          <h2 id="contact-title" className="contact__title">
+            {heading}
+          </h2>
+          <p className="contact__blurb">{blurb}</p>
+        </div>
         <ul className="contact__links">
           {links.map((link) => {
             const external = link.href.startsWith('http')

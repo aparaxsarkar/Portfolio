@@ -1,6 +1,7 @@
 // Functional QA against the Vite dev server (so TS modules can be imported for model-level checks).
 // usage: node qa/interaction.mjs [--url=http://localhost:5173/]
 import { chromium } from 'playwright-core'
+import { education } from '../src/data/education.ts'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 
@@ -378,8 +379,17 @@ const navShape = (page) =>
   )
   check('education cards have no summary paragraph', cards.every((c) => !c.hasDesc))
   check('hierarchy: degree · years → university → metadata (no link)', cards[0].order.join(',') === 'card__tags,card__title,card__meta' && /·/.test(cards[0].top), JSON.stringify(cards[0].order))
-  check('undergrad shows "GPA: 3.7 / 4.0" and "Honors: Data Science"', cards[0].meta.join('|') === 'GPA: 3.7 / 4.0|Honors: Data Science', JSON.stringify(cards[0].meta))
-  check('absent optional fields are omitted (no distinction line on the second entry; education has no link)', cards[1].meta.length === 1 && cards.every((c) => c.links === 0), JSON.stringify({ meta: cards[1].meta, links: cards[1].links }))
+  // What each card must show follows from its entry: required fields always, optional ones only when present.
+  const want = education.map((e) => ({
+    top: `${e.degree} · ${e.years}`,
+    title: e.university,
+    meta: [e.gpa && `GPA: ${e.gpa}`, e.distinction].filter(Boolean),
+    links: e.link ? 1 : 0,
+  }))
+  check('one card per education entry, in the order of the data file', cards.length === want.length, `${cards.length} cards, ${want.length} entries`)
+  check('each card shows its entry’s degree · years and university', cards.every((c, i) => c.top === want[i]?.top && c.title === want[i]?.title), JSON.stringify(cards.map((c) => [c.top, c.title])))
+  check('each card shows exactly its GPA and distinction lines, and omits whichever the entry leaves out', cards.every((c, i) => JSON.stringify(c.meta) === JSON.stringify(want[i]?.meta)), JSON.stringify(cards.map((c) => c.meta)))
+  check('a link appears only on entries that have one', cards.every((c, i) => c.links === want[i]?.links), JSON.stringify(cards.map((c) => c.links)))
   const fit = await page.$$eval('#education .card', (cs) =>
     cs.map((c) => {
       const kids = [...c.children]
@@ -393,7 +403,17 @@ const navShape = (page) =>
   const stdH = await page.$eval('#projects .card', (c) => c.offsetHeight)
   const stdBorder = await page.$eval('#projects .card', (c) => getComputedStyle(c).borderTopWidth + '|' + getComputedStyle(c).padding)
   const tallest = Math.max(...fit.map((f) => f.natural))
-  check('education cards are all the height of the tallest (no taller than its content needs)', fit.every((f) => f.h === tallest) && fit.some((f) => f.natural !== tallest) && fit.some((f) => Math.abs(f.spare) <= 1) && tallest < stdH * 0.7, JSON.stringify(fit.map((f) => ({ h: f.h, natural: f.natural, spare: f.spare }))) + ` (standard card ${stdH}px)`)
+  check('education cards are all the same height, no taller than the tallest needs', fit.every((f) => f.h === tallest) && fit.some((f) => Math.abs(f.spare) <= 1) && tallest < stdH * 0.7, JSON.stringify(fit.map((f) => ({ h: f.h, natural: f.natural, spare: f.spare }))) + ` (standard card ${stdH}px)`)
+  // The real entries happen to be the same length, so make one taller and confirm the other grows to match.
+  await page.evaluate(() => {
+    const li = document.createElement('li')
+    li.textContent = 'An extra line that makes this card taller than the other'
+    document.querySelector('#education .card .card__meta').append(li)
+  })
+  await page.setViewportSize({ width: 1441, height: 900 })
+  await page.waitForTimeout(500)
+  const grown = await page.$$eval('#education .card', (cs) => cs.map((c) => c.offsetHeight))
+  check('when one education card grows, the others grow to match it', grown.every((h) => h === grown[0]) && grown[0] > tallest, `${tallest}px → ${grown.join(' / ')}px`)
   check('education cards keep the same border width and padding as every other card', fit.every((f) => f.border + '|' + f.padding === stdBorder), stdBorder)
   check('GPA is quiet: body-size text, no badge/meter/progress bar', cards.every((c) => !c.badge) && parseFloat(cards[0].metaFont) < parseFloat(cards[0].titleFont) / 1.5, `${cards[0].metaFont} vs title ${cards[0].titleFont}`)
   await context.close()
