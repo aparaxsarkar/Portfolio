@@ -87,6 +87,17 @@
   overflow: hidden;
 }
 
+/* A card without a link holds no room for one. It keeps the standard tile size as a minimum and only grows (see
+   equaliseCompactCards) when its summary needs more lines than that size leaves — so the summary is never cut short. */
+.card--no-link {
+  min-height: var(--card-h);
+}
+
+.card--no-link .card__desc {
+  -webkit-line-clamp: 12;
+  line-clamp: 12;
+}
+
 .card__meta {
   margin: 0.9rem 0 0;
   padding: 0;

@@ -296,9 +296,11 @@ const navShape = (page) =>
 {
   const { context, page } = await open()
   const links = await page.$$eval('.card__link', (as) => as.map((a) => ({ section: a.closest('section').id, text: a.textContent.trim(), aria: a.getAttribute('aria-label'), host: new URL(a.href).hostname })))
-  const expect = { experiences: ['Details ↗', 'example.com'], projects: ['GitHub ↗', 'github.com'], research: ['GitHub ↗', 'github.com'], achievements: ['Certificate ↗', 'example.com'], extracurricular: ['View ↗', 'example.com'] }
+  const expect = { projects: ['GitHub ↗', 'github.com'], research: ['GitHub ↗', 'github.com'], achievements: ['Certificate ↗', 'example.com'], extracurricular: ['View ↗', 'example.com'] }
   const wrong = links.filter((l) => !expect[l.section] || l.text !== expect[l.section][0] || l.host !== expect[l.section][1] || !l.aria.toLowerCase().startsWith(l.text.replace(' ↗', '').toLowerCase()))
-  check('card link label, accessible name and host agree in every section', links.length === 4 + 7 + 4 + 0 + 4 + 3 && wrong.length === 0, wrong.length ? JSON.stringify(wrong[0]) : `${links.length} links; GitHub only on projects/research`)
+  check('card link label, accessible name and host agree in every section', links.length === 7 + 4 + 0 + 4 + 3 && wrong.length === 0, wrong.length ? JSON.stringify(wrong[0]) : `${links.length} links; GitHub only on projects/research`)
+  // Experiences cards carry no link, so they hold no room for one: the tile is the standard size or taller, never clipped.
+  check('experiences cards have no link and no clipped summary', await page.$$eval('#experiences .card', (cs) => cs.length > 0 && cs.every((c) => !c.querySelector('.card__link') && c.classList.contains('card--no-link') && c.querySelector('.card__desc').scrollHeight <= c.querySelector('.card__desc').clientHeight + 1)))
   const bare = await page.$$eval('#extracurricular .card', (cs) => cs.map((c) => c.querySelectorAll('a').length))
   check('an entry with no destination simply omits the link (no dead or fake link)', bare.filter((n) => n === 0).length === 1 && bare.length === 4, JSON.stringify(bare))
   await context.close()

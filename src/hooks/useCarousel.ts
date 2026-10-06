@@ -14,14 +14,15 @@ import { prefersReducedMotion } from './motion'
 /**
  * Compact cards (`.card--compact`, used by Education) size to their content; so that a set of them reads as a set, they
  * all take the height of the tallest. Natural heights are re-read each time, so removing a field shrinks them again.
+ * Link-less cards (`.card--no-link`) are the standard tile size at minimum, so their box keeps the standard padding.
  */
-function equaliseCompactCards(cards: (HTMLElement | null)[]): number | null {
+function equaliseCompactCards(cards: (HTMLElement | null)[]): { tallest: number; pads: number } | null {
   const compact = cards.filter((el): el is HTMLElement => !!el && el.classList.contains('card--compact'))
   if (!compact.length) return null
   for (const el of compact) el.style.height = ''
   const tallest = Math.max(...compact.map((el) => el.offsetHeight))
   for (const el of compact) el.style.height = `${tallest}px`
-  return tallest
+  return { tallest, pads: compact[0].classList.contains('card--no-link') ? 2 : 1 }
 }
 
 /**
@@ -170,8 +171,8 @@ export function useCarousel(count: number) {
       s.gap = parseFloat(cs.columnGap) || 24
       // Fixed-size cards sit in a box sized from --card-h (CSS). Compact cards size to their content, so the box must too —
       // otherwise the space they don't use becomes dead space before the next section.
-      const tallest = equaliseCompactCards(cardRefs.current)
-      vp.style.height = tallest ? `calc(${tallest}px + var(--carousel-pad))` : ''
+      const compact = equaliseCompactCards(cardRefs.current)
+      vp.style.height = compact ? `calc(${compact.tallest}px + ${compact.pads} * var(--carousel-pad))` : ''
       const fits = count <= 2 && count * s.cardW + (count - 1) * s.gap * 1.5 <= vp.clientWidth - 32
       s.isStatic = fits
       setIsStatic(fits)

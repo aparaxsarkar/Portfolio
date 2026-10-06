@@ -15,7 +15,7 @@ export function Card({ item, ref, position, total }: CardProps) {
   return (
     <div
       ref={ref}
-      className="card"
+      className={item.link ? 'card' : 'card card--compact card--no-link'}
       role="group"
       aria-roledescription="slide"
       aria-label={`${position} of ${total}`}
