@@ -81,7 +81,7 @@
 
 .card__desc {
   margin: 0.9rem 0 0;
-  font-size: var(--text-sm);
+  font-size: calc(var(--text-sm) + 1px); /* 14px: one step up from the 13px shared with the metadata lines */
   line-height: 1.5;
   color: var(--ui-card-muted);
 }
