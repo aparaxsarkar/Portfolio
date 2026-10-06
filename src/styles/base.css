@@ -8,11 +8,15 @@ html {
   -webkit-text-size-adjust: 100%;
   background: var(--ui-sky-top);
   overflow-x: clip;
+  /* A sideways swipe belongs to the carousels. Without this, a swipe toward the previous card is also the browser's
+     "go back" gesture and can be taken by it before the page ever sees it. */
+  overscroll-behavior-x: none;
 }
 
 body {
   margin: 0;
   overflow-x: clip;
+  overscroll-behavior-x: none;
   background: var(--ui-sky-top);
   color: var(--ui-ink);
   font-family: var(--font-sans);

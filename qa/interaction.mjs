@@ -247,6 +247,20 @@ const navShape = (page) =>
   await page.waitForTimeout(200)
   check('vertical wheel still scrolls the page', (await page.evaluate(() => scrollY)) > sy)
 
+  // Swiping back (toward the first card) must work exactly like swiping forward.
+  const fwdIdx = await activeIndex(page, sel)
+  await page.mouse.move(box.x + box.width / 2, cy)
+  await page.mouse.down()
+  await page.mouse.move(box.x + box.width / 2 + 120, cy, { steps: 6 })
+  await page.mouse.move(box.x + box.width / 2 + 340, cy, { steps: 6 })
+  await page.mouse.up()
+  await page.waitForTimeout(900)
+  const afterDrag = await activeIndex(page, sel)
+  check('mouse drag back moves toward the first card', afterDrag < fwdIdx, `${fwdIdx} → ${afterDrag}`)
+  await page.mouse.wheel(-120, 0)
+  await page.waitForTimeout(800)
+  check('horizontal wheel back moves toward the first card', (await activeIndex(page, sel)) === afterDrag - 1 || afterDrag === 0)
+
   // Clicking a side card brings it forward; focusing its link does too.
   await page.click(`${sel} .carousel__btn[aria-label="Previous project"]`)
   await page.waitForTimeout(700)
@@ -274,6 +288,27 @@ const navShape = (page) =>
   await touch('touchEnd', 90)
   await page.waitForTimeout(900)
   check('touch swipe advances the carousel', (await activeIndex(page, '#projects')) === 1)
+  // …and back again, including a swipe that starts close to the screen edge.
+  for (const [from, to] of [[90, 300], [60, 300]]) {
+    await touch('touchStart', from)
+    for (let x = from; x <= to; x += 30) {
+      await touch('touchMove', x)
+      await page.waitForTimeout(16)
+    }
+    await touch('touchEnd', to)
+    await page.waitForTimeout(900)
+    if (from === 90) check('touch swipe back returns to the previous card', (await activeIndex(page, '#projects')) === 0)
+  }
+  await page.evaluate(() => document.querySelector('#projects .carousel__btn[aria-label^="Next"]').click())
+  await page.waitForTimeout(700)
+  await touch('touchStart', 20)
+  for (let x = 20; x <= 260; x += 30) {
+    await touch('touchMove', x)
+    await page.waitForTimeout(16)
+  }
+  await touch('touchEnd', 260)
+  await page.waitForTimeout(900)
+  check('touch swipe back from the screen edge works', (await activeIndex(page, '#projects')) === 0)
   const vs = await page.evaluate(() => scrollY)
   // vertical swipe must still scroll the page
   await cdp.send('Input.synthesizeScrollGesture', { x: 195, y: 600, yDistance: -300, speed: 800 })
