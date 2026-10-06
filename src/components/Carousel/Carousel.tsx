@@ -1,6 +1,6 @@
 import type { ReactNode, Ref } from 'react'
 import { useCarousel } from '../../hooks/useCarousel'
-import type { CardItem } from '../../data'
+import { cardName, type CardItem } from '../../data'
 import { Card } from '../Card/Card'
 import './Carousel.css'
 
@@ -30,7 +30,7 @@ export function CardCarousel({ label, noun, items }: { label: string; noun: stri
       label={label}
       noun={noun}
       items={items}
-      announce={(item) => item.title}
+      announce={cardName}
       renderCard={(item, slide) => <Card item={item} {...slide} />}
     />
   )

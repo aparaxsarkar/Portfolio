@@ -14,6 +14,11 @@ export interface CardLink {
 export interface CardItem {
   id: string
   title: string
+  /**
+   * Optional second line under the title, e.g. the employer for a role. The title then ends in a comma and the
+   * organisation sits on the line below, so every card in the set reads the same way.
+   */
+  org?: string
   /** Shown above the title, joined with " · ". */
   tags: string[]
   /** A short summary, shown in up to five lines: what it was, what was built or done, and the outcome or purpose. */
@@ -54,3 +59,6 @@ export interface ContactLink {
   /** Shown beside the label (e.g. the address). */
   note?: string
 }
+
+/** The card's full name as spoken or announced: "Role, Organisation" when there is an organisation. */
+export const cardName = (item: Pick<CardItem, 'title' | 'org'>) => (item.org ? `${item.title}, ${item.org}` : item.title)

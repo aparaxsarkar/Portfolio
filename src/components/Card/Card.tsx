@@ -1,5 +1,5 @@
 import type { Ref } from 'react'
-import type { CardItem } from '../../data'
+import { cardName, type CardItem } from '../../data'
 import './Card.css'
 
 interface CardProps {
@@ -21,7 +21,15 @@ export function Card({ item, ref, position, total }: CardProps) {
       aria-label={`${position} of ${total}`}
     >
       <p className="card__tags">{item.tags.join(' · ')}</p>
-      <h3 className="card__title">{item.title}</h3>
+      <h3 className="card__title">
+        {item.org ? (
+          <>
+            <span className="card__role">{item.title},</span> <span className="card__org">{item.org}</span>
+          </>
+        ) : (
+          item.title
+        )}
+      </h3>
       <p className="card__desc">{item.description}</p>
       {item.link && (
         <a
@@ -29,7 +37,7 @@ export function Card({ item, ref, position, total }: CardProps) {
           href={item.link.href}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`${item.link.label}: ${item.title} (opens in a new tab)`}
+          aria-label={`${item.link.label}: ${cardName(item)} (opens in a new tab)`}
           draggable={false}
         >
           {item.link.label} <span aria-hidden="true">↗</span>

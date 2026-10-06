@@ -72,6 +72,13 @@
   text-wrap: balance;
 }
 
+/* Role on its own line, organisation on the next, so a set of cards reads alike. A role too long for the card's
+   width still wraps rather than being cut. */
+.card__role,
+.card__org {
+  display: block;
+}
+
 .card__desc {
   margin: 0.9rem 0 0;
   font-size: var(--text-sm);
