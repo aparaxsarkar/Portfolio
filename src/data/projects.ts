@@ -14,9 +14,9 @@ export const projects: CardItem[] = [
   {
     id: 'portfolio',
     title: 'BONUS! THIS PORTFOLIO!',
-    tags: ['Frontend', 'React', 'TypeScript', 'Canvas/SVG', 'Responsive Design'],
+    tags: ['Frontend', 'React', 'TypeScript', 'Canvas/SVG'],
     description:
-      'Engineered a scroll-driven portfolio experience with React and TypeScript, using a deterministic world-state system to synchronize environment lighting, sun position, shadows, sky transitions, and celestial effects with navigation progress. Built reusable, data-driven carousels with Canvas/SVG rendering, keyboard and touch interaction, and responsive design across desktop and mobile.',
+      'Engineered a portfolio with React and TypeScript, using a deterministic world-state system to synchronize environment lighting, sun position, shadows, sky transitions, and celestial effects with navigation progress. Built reusable, data-driven carousels with Canvas/SVG rendering, keyboard and touch interaction, and responsive design across desktop and mobile.',
     link: github('https://github.com/aparaxsarkar/aparaxsarkar.github.io'),
   },
   {
