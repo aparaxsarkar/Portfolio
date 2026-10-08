@@ -5,7 +5,7 @@ import type { CardItem } from './types'
 export const projects: CardItem[] = [
   {
     id: 'crucible',
-    title: 'CRUCIBLE – Self-Improving Security Harness',
+    title: 'CRUCIBLE – SELF-IMPROVING SECURITY HARNESS',
     tags: ['LLMs', 'RAG', 'AI Security', 'Python', 'MongoDB'],
     description:
       'Built a self-evolving LLM security harness in Python where red-team agents generate tool-use attacks and blue-team agents develop and evaluate defensive patches across system generations. Implementing persistent RAG memory using MongoDB, attack success fell from 66.7% to 0% across five generations, while also increasing generated candidate quality by 7×.',
