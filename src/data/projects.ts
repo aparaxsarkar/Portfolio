@@ -6,10 +6,18 @@ export const projects: CardItem[] = [
   {
     id: 'crucible',
     title: 'Crucible – Self-Improving Security Harness',
-    tags: ['AI Security', 'LLMs', 'Python', 'MongoDB'],
+    tags: ['LLMs', 'RAG', 'AI Security', 'Python', 'MongoDB'],
     description:
       'Built a self-evolving LLM security harness in Python where red-team agents generate tool-use attacks and blue-team agents develop and evaluate defensive patches across system generations. Implementing persistent RAG memory using MongoDB, attack success fell from 66.7% to 0% across five generations, while also increasing generated candidate quality by 7×.',
     link: github('Crucible'),
+  },
+  {
+    id: 'portfolio',
+    title: 'BONUS! THIS PORTFOLIO!',
+    tags: ['Frontend', 'React', 'TypeScript', 'Canvas/SVG', 'Responsive Design'],
+    description:
+      'Engineered a scroll-driven portfolio experience with React and TypeScript, using a deterministic world-state system to synchronize environment lighting, sun position, shadows, sky transitions, and celestial effects with navigation progress. Built reusable, data-driven carousels with Canvas/SVG rendering, keyboard and touch interaction, and responsive design across desktop and mobile.',
+    link: github('https://github.com/aparaxsarkar/aparaxsarkar.github.io'),
   },
   {
     id: 'project-1',
