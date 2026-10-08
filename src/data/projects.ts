@@ -1,8 +1,16 @@
 import { github } from './links'
 import type { CardItem } from './types'
 
-/** PLACEHOLDER CONTENT — replace each entry; add or remove freely. */
+/** Crucible is real; the remaining entries are PLACEHOLDER CONTENT — replace each; add or remove freely. */
 export const projects: CardItem[] = [
+  {
+    id: 'crucible',
+    title: 'Crucible – Self-Improving Security Harness',
+    tags: ['AI Security', 'LLMs', 'Python', 'MongoDB'],
+    description:
+      'Built a self-evolving LLM security harness in Python where red-team agents generate tool-use attacks and blue-team agents develop and evaluate defensive patches across system generations. Implementing persistent RAG memory using MongoDB, attack success fell from 66.7% to 0% across five generations, while also increasing generated candidate quality by 7×.',
+    link: github('Crucible'),
+  },
   {
     id: 'project-1',
     title: '[PROJECT TITLE 1]',
