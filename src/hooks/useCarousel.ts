@@ -54,6 +54,8 @@ export function useCarousel(count: number) {
     wheelIdle: 0,
     /** Direction (±1) of the card step this swipe has already made; 0 when free to step. */
     wheelSpent: 0,
+    /** |deltaX| of the previous wheel event, to spot a fresh swipe starting on top of a coasting one. */
+    wheelLast: 0,
     tick: null as unknown as FrameRequestCallback,
   })
   const drag = useRef<{
@@ -197,13 +199,17 @@ export function useCarousel(count: number) {
       e.preventDefault()
       const now = performance.now()
       // A trackpad swipe keeps sending events for a second or so as it coasts. One swipe moves one card; the swipe is
-      // over when the events stop, or when they turn around (a deliberate swipe back).
-      if (now - s.wheelIdle > 160) {
+      // over when the events stop, when they turn around (a deliberate swipe back), or when the deltas climb again
+      // while coasting (a new swipe in the same direction).
+      const abs = Math.abs(e.deltaX)
+      const restarted = s.wheelSpent !== 0 && abs >= 12 && abs > s.wheelLast * 1.5
+      s.wheelLast = abs
+      if (now - s.wheelIdle > 60 || restarted) {
         s.wheelAcc = 0
         s.wheelSpent = 0
       }
       s.wheelIdle = now
-      if (s.wheelSpent && Math.sign(e.deltaX) === -s.wheelSpent && Math.abs(e.deltaX) >= 6) {
+      if (s.wheelSpent && Math.sign(e.deltaX) === -s.wheelSpent && abs >= 6) {
         s.wheelAcc = 0
         s.wheelSpent = 0
       }
