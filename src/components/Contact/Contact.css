@@ -37,7 +37,6 @@
 
 .contact__blurb {
   position: relative;
-  isolation: isolate; /* the shade below stays behind this text but above the sky */
   max-width: 46rem;
   margin: 1.5rem auto 0;
   line-height: 1.7;
@@ -105,18 +104,6 @@
 
 /* Phones: the plate holds the four links as compact rows. */
 @media (max-width: 720px) {
-  /* On a narrow screen the closing paragraph runs long, which carries its last lines down over the pale horizon.
-     A soft shade that is clear at the top and deepens toward the bottom, with feathered edges, keeps them readable. */
-  .contact__blurb::before {
-    content: '';
-    position: absolute;
-    inset: -1rem -1rem -0.75rem;
-    z-index: -1;
-    border-radius: 1.25rem;
-    background: linear-gradient(to bottom, transparent 40%, var(--ui-ink-shadow) 85%);
-    filter: blur(8px);
-    pointer-events: none;
-  }
   .contact__links {
     grid-template-columns: 1fr;
   }

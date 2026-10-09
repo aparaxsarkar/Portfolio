@@ -8,6 +8,9 @@ import { SUN_PATH } from '../src/config/world.ts'
 
 const url = (process.argv.find((a) => a.startsWith('--url=')) ?? '--url=http://localhost:5173/').slice(6)
 const SIZES = [[360, 740], [375, 667], [390, 844], [414, 896], [430, 932], [600, 900], [768, 1024], [1024, 768], [1280, 800], [1440, 900], [1920, 1080]]
+// The closing paragraph on a phone has no shade behind it (owner's choice, 2026-10-09). Its last lines can land over the
+// pale horizon and measure below AA there; reported as a warning rather than a failure.
+const WARN_ONLY = (width, key) => width <= 720 && key === '.contact__blurb'
 const SEL = ['.contact__title', '.contact__blurb', '.contact__label', '.contact__note', '.contact__footer']
 const lum = ([r, g, b]) => {
   const f = (c) => ((c /= 255) <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
@@ -20,6 +23,7 @@ const ratio = (a, b) => {
 
 const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true })
 let failed = 0
+let warned = 0
 for (const [width, height] of SIZES) {
   const mobile = width < 700
   const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: mobile ? 2 : 1, isMobile: mobile, hasTouch: mobile })
@@ -83,12 +87,15 @@ for (const [width, height] of SIZES) {
     const need = b.size >= 24 ? 3 : 4.5
     if (!worst[b.s] || r - need < worst[b.s].margin) worst[b.s] = { r: +r.toFixed(2), need, margin: r - need }
   })
-  const bad = Object.entries(worst).filter(([, v]) => v.margin < 0)
+  const below = Object.entries(worst).filter(([, v]) => v.margin < 0)
+  const warn = below.filter(([k]) => WARN_ONLY(width, k))
+  const bad = below.filter(([k]) => !WARN_ONLY(width, k))
   failed += bad.length
+  warned += warn.length
   const summary = Object.entries(worst).map(([k, v]) => `${k.replace('.contact__', '')} ${v.r}`).join('  ')
-  console.log(`${bad.length ? '✗' : '✓'} ${width}×${height}  ${summary}${bad.length ? `   BELOW AA: ${bad.map(([k, v]) => `${k} ${v.r}<${v.need}`).join(', ')}` : ''}${sunBlocked ? `   SUN COVERED by the links plate (${sun.distance.toFixed(0)}px from its centre, disc radius ≈${sun.radius.toFixed(0)}px)` : ''}${sun.fits ? '' : '   (section taller than the screen)'}`)
+  console.log(`${bad.length ? '✗' : warn.length ? '⚠' : '✓'} ${width}×${height}  ${summary}${bad.length ? `   BELOW AA: ${bad.map(([k, v]) => `${k} ${v.r}<${v.need}`).join(', ')}` : ''}${warn.length ? `   (paragraph without a shade: ${warn.map(([, v]) => v.r).join(', ')} — accepted)` : ''}${sunBlocked ? `   SUN COVERED by the links plate (${sun.distance.toFixed(0)}px from its centre, disc radius ≈${sun.radius.toFixed(0)}px)` : ''}${sun.fits ? '' : '   (section taller than the screen)'}`)
   await page.close()
 }
 await browser.close()
-console.log(failed ? `\n${failed} contact text blocks below WCAG AA` : '\nall Contact text meets WCAG AA at every size')
+console.log(failed ? `\n${failed} contact text blocks below WCAG AA` : warned ? `\nno failures; ${warned} phone paragraph measurements are below AA by choice (no shade) — see the note at the top of this file` : '\nall Contact text meets WCAG AA at every size')
 process.exit(failed ? 1 : 0)
