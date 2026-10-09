@@ -56,6 +56,20 @@ for (const [width, height] of SIZES) {
     return { fits, distance: Math.hypot(dx, dy), radius: innerHeight * 0.041 }
   }, { x: SUN_PATH.x1, y: SUN_PATH.yEnd })
   // The disc is h·0.027·1.5 across at the end (sky.ts); keep a small margin beyond it.
+  // Space between the paragraph and the links plate is never tighter than card → carousel controls in the other sections.
+  const gap = await page.evaluate(() => {
+    const probe = document.createElement('div')
+    probe.style.cssText = 'position:absolute;visibility:hidden;width:calc(var(--carousel-pad) + 0.25rem)'
+    document.body.append(probe)
+    const want = probe.getBoundingClientRect().width
+    probe.remove()
+    return {
+      actual: document.querySelector('.contact__links').getBoundingClientRect().top - document.querySelector('.contact__blurb').getBoundingClientRect().bottom,
+      want,
+    }
+  })
+  const gapTight = gap.actual < gap.want - 0.5
+  if (gapTight) failed++
   const sunBlocked = sun.fits && sun.distance < sun.radius + 8
   if (sunBlocked) failed++
   await page.addStyleTag({ content: '.contact__inner *, .contact__footer { color: transparent !important; border-color: transparent !important; transition: none !important }' })
@@ -93,7 +107,7 @@ for (const [width, height] of SIZES) {
   failed += bad.length
   warned += warn.length
   const summary = Object.entries(worst).map(([k, v]) => `${k.replace('.contact__', '')} ${v.r}`).join('  ')
-  console.log(`${bad.length ? '✗' : warn.length ? '⚠' : '✓'} ${width}×${height}  ${summary}${bad.length ? `   BELOW AA: ${bad.map(([k, v]) => `${k} ${v.r}<${v.need}`).join(', ')}` : ''}${warn.length ? `   (paragraph without a shade: ${warn.map(([, v]) => v.r).join(', ')} — accepted)` : ''}${sunBlocked ? `   SUN COVERED by the links plate (${sun.distance.toFixed(0)}px from its centre, disc radius ≈${sun.radius.toFixed(0)}px)` : ''}${sun.fits ? '' : '   (section taller than the screen)'}`)
+  console.log(`${bad.length ? '✗' : warn.length ? '⚠' : '✓'} ${width}×${height}  ${summary}${bad.length ? `   BELOW AA: ${bad.map(([k, v]) => `${k} ${v.r}<${v.need}`).join(', ')}` : ''}${warn.length ? `   (paragraph without a shade: ${warn.map(([, v]) => v.r).join(', ')} — accepted)` : ''}${gapTight ? `   PARAGRAPH→LINKS GAP ${gap.actual.toFixed(0)}px < ${gap.want.toFixed(0)}px` : ''}${sunBlocked ? `   SUN COVERED by the links plate (${sun.distance.toFixed(0)}px from its centre, disc radius ≈${sun.radius.toFixed(0)}px)` : ''}${sun.fits ? '' : '   (section taller than the screen)'}`)
   await page.close()
 }
 await browser.close()

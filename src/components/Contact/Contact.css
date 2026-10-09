@@ -21,6 +21,8 @@
    always sits below the sunrise and never covers it, whatever the screen shape or paragraph length. */
 .contact__head {
   min-height: calc(64.9svh + 1.25rem - var(--contact-top));
+  /* Never closer to the links than a card is to its carousel controls (--carousel-pad + the controls' 0.25rem margin). */
+  padding-bottom: calc(var(--carousel-pad) + 0.25rem);
 }
 
 .contact__title {
