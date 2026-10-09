@@ -119,11 +119,6 @@
   }
   .contact__links {
     grid-template-columns: 1fr;
-    /* No plate on a phone: the links sit straight on the scene. */
-    padding: 0;
-    background: none;
-    border: 0;
-    border-radius: 0;
   }
   .contact__link {
     flex-direction: row;
@@ -134,14 +129,5 @@
   }
   .contact__links li + li .contact__link {
     border-top: 1px solid var(--ui-rule);
-  }
-  .contact__label,
-  .contact__note {
-    /* Without a plate, a dense dark halo keeps the light text readable over sunlit sand. */
-    text-shadow:
-      0 0 2px rgb(10 5 0 / 0.95),
-      0 0 5px rgb(10 5 0 / 0.9),
-      0 0 10px rgb(10 5 0 / 0.8),
-      0 1px 16px rgb(10 5 0 / 0.7);
   }
 }
